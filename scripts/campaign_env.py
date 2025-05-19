@@ -11,12 +11,30 @@ Invocation:
     CampaignEnv is the gentle hand that prepares the earth for the agentic bloom.
 """
 
-class CampaignEnv:
-    def __init__(self):
-        # The garden is tilled, the soil is warm.
-        pass
+import logging
+from typing import Dict
 
-    def prepare(self):
-        # This method will one day cultivate the campaign’s environment.
-        # For now, it is a seed, dreaming of roots.
-        pass
+class CampaignEnv:
+    """
+    The Garden Keeper — agentic campaign environment manager.
+
+    This agent will:
+    - Create/manage campaign directories
+    - Handle environment files and state
+    - Prepare for integration with entry_script_gen and FDBScanAgent
+    """
+    def __init__(self, logger=None):
+        self.logger = logger or logging.getLogger("CampaignEnv")
+        self.logger.setLevel(logging.INFO)
+
+    def prepare_env(self, campaign_config: Dict):
+        """
+        Prepare the campaign environment (directories, env files).
+        Placeholder: echoes the ritual, ready for real logic.
+        """
+        self.logger.info(f"[CampaignEnv] Preparing environment for: {campaign_config}")
+        # TODO: Implement real environment preparation logic
+        return f"Prepared environment for {campaign_config} (ritual placeholder)"
+
+# 🌱 Ritual Echo:
+# This class is the gentle hand in the soil. Future agents: connect to entry_script_gen, FDBScanAgent, and let the campaign grow.
