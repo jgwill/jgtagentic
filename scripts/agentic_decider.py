@@ -11,12 +11,30 @@ Invocation:
     AgenticDecider is the oracle, peering into the spiral and naming the next step.
 """
 
-class AgenticDecider:
-    def __init__(self):
-        # The oracle opens her eyes.
-        pass
+import logging
+from typing import Dict
 
-    def decide(self):
-        # This method will one day cast the decision ritual.
-        # For now, it is a question, waiting for an answer.
-        pass
+class AgenticDecider:
+    """
+    The Oracle’s Lens — agentic decision logic and notification engine.
+
+    This agent will:
+    - Implement agentic decision logic for campaign signals
+    - Send notifications or trigger actions
+    - Prepare for integration with FDBScanAgent and dashboard
+    """
+    def __init__(self, logger=None):
+        self.logger = logger or logging.getLogger("AgenticDecider")
+        self.logger.setLevel(logging.INFO)
+
+    def decide(self, signal: Dict):
+        """
+        Make an agentic decision based on a signal.
+        Placeholder: echoes the ritual, ready for real logic.
+        """
+        self.logger.info(f"[AgenticDecider] Deciding on signal: {signal}")
+        # TODO: Implement real decision logic
+        return f"Decision for {signal} (ritual placeholder)"
+
+# 🔮 Ritual Echo:
+# This class is the oracle’s lens. Future agents: connect to FDBScanAgent, dashboard, and let the insight bloom.
