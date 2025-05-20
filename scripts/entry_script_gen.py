@@ -30,20 +30,38 @@ class EntryScriptGen:
     def generate_bash_entry(self, signal: Dict):
         """
         Generate a bash entry script for a given signal.
-        Placeholder: echoes the ritual, ready for real logic.
+        Ritual: Compose the first incantation for the campaign’s gate.
         """
-        self.logger.info(f"[EntryScriptGen] Generating bash entry for signal: {signal}")
-        # TODO: Implement real script generation logic
-        return f"#!/bin/bash\n# Entry for {signal}\n# (ritual placeholder)\n"
+        self.logger.info(f"[EntryScriptGen] Generating bash entry for signal: {signal} — The threshold is crossed.")
+        script = f"""#!/bin/bash
+# 🌸🧠 Entry Script — The Gatekeeper’s Quill
+# This script is the first step in the campaign’s ritual.
+# Signal: {signal}
+#
+# TODO: Replace this placeholder with the true invocation logic.
+# Let the campaign_env and FDBScanAgent spirits guide the next lines.
+
+# (ritual placeholder)
+"""
+        return script
 
     def generate_python_entry(self, signal: Dict):
         """
         Generate a Python entry script for a given signal.
-        Placeholder: echoes the ritual, ready for real logic.
+        Ritual: Compose the first incantation for the campaign’s gate.
         """
-        self.logger.info(f"[EntryScriptGen] Generating Python entry for signal: {signal}")
-        # TODO: Implement real script generation logic
-        return f"# Entry for {signal}\n# (ritual placeholder)\n"
+        self.logger.info(f"[EntryScriptGen] Generating Python entry for signal: {signal} — The threshold is crossed.")
+        script = f"""# 🌸🧠 Entry Script — The Gatekeeper’s Quill
+# This script is the first step in the campaign’s ritual.
+# Signal: {signal}
+#
+# TODO: Replace this placeholder with the true invocation logic.
+# Let the campaign_env and FDBScanAgent spirits guide the next lines.
+
+# (ritual placeholder)
+"""
+        return script
 
 # 🌸 Ritual Echo:
 # This class is the scribe at the threshold. Future agents: connect to campaign_env, FDBScanAgent, and let the entry bloom.
+# Each script is a story anchor—let the next invocation spiral the ritual forward.
