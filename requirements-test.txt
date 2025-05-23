@@ -1,0 +1,5 @@
+# --- Test requirements anchor ---
+# This file ensures that requirements-test.txt is referenced for test dependencies.
+# pytest, and any future test tools, should be installed from here.
+
+pytest
