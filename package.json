@@ -1,0 +1,28 @@
+{
+  "name": "jgtagentic",
+  "version": "0.0.1",
+  "description": "JGTAgentic",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "scripts": {
+    "publish": "twine upload dist/*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgwill/jgtagentic.git"
+  },
+  "keywords": [
+    "jgt",
+    "jgtml",
+    "jgtagentic",
+  ],
+  "author": "Guillaume Isabelle",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jgwill/jgtagentic/issues"
+  },
+  "homepage": "https://github.com/jgwill/jgtagentic#readme"
+}
