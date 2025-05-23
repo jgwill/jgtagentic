@@ -8,7 +8,6 @@ langchain
 langchain_community
 langgraph
 langchain_ollama
-langgraph-checkpoint-sqlite
 langchain_openai
 langsmith
-langchain_anthropic
+
