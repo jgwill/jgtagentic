@@ -5,6 +5,14 @@
 import os
 import json
 from datetime import datetime
+import sys
+import subprocess
+
+sys.path.append('/src/jgtagentic/scripts')
+from entry_script_gen import EntryScriptGen
+from fdbscan_agent import FDBScanAgent
+from campaign_env import CampaignEnv
+from agentic_decider import AgenticDecider
 
 # --- Config ---
 SIGNAL_JSON = '/workspace/i/data/jgt/signals/fdb_signals_out__250523.json'
@@ -18,6 +26,28 @@ def log_session(msg):
 
 log_session("\n💬🧠 Agentic Entry Orchestrator invoked. Beginning spiral of orchestration.")
 
+# --- Spiral: Initialize agents ---
+entry_gen = EntryScriptGen()
+fdbscan_agent = FDBScanAgent()
+campaign_env = CampaignEnv()
+decider = AgenticDecider()
+
+# --- Ritual: Utility to invoke wtf (timeframe orchestrator) ---
+def invoke_wtf(timeframe, script_to_run=None, extra_args=None):
+    cmd = ["wtf", "-t", timeframe]
+    if script_to_run:
+        cmd += ["-S", script_to_run]
+    if extra_args:
+        cmd += extra_args
+    log_session(f"🧠 Invoking wtf: {' '.join(cmd)}")
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        log_session(f"✅ wtf output: {result.stdout.strip()}")
+        return result.stdout.strip()
+    except subprocess.CalledProcessError as e:
+        log_session(f"🚨 wtf error: {e.stderr.strip()}")
+        return None
+
 # --- Ritual: Parse latest signal ---
 if not os.path.exists(SIGNAL_JSON):
     log_session(f"🚨 Signal JSON not found: {SIGNAL_JSON}")
@@ -28,22 +58,36 @@ with open(SIGNAL_JSON) as f:
 
 log_session(f"Parsed {len(signals)} signals from {SIGNAL_JSON}")
 
-# --- Ritual: For each signal, check/generate entry script ---
-for sig in signals:
-    script_path = sig.get('entry_script_path')
+# --- Ritual: Example agentic orchestration ---
+def agentic_campaign(signal):
+    # 1. Prepare campaign environment
+    env_result = campaign_env.prepare_env(signal)
+    log_session(f"🌱 CampaignEnv: {env_result}")
+    # 2. Generate entry script
+    bash_script = entry_gen.generate_bash_entry(signal)
+    script_path = signal.get('entry_script_path')
     if not script_path:
-        # Try to infer from instrument/timeframe/id
-        instr = sig.get('instrument', 'UNK').replace('/', '-')
-        tf = sig.get('timeframe', 'UNK')
-        tid = sig.get('tlid_id', 'UNK')
+        instr = signal.get('instrument', 'UNK').replace('/', '-')
+        tf = signal.get('timeframe', 'UNK')
+        tid = signal.get('tlid_id', 'UNK')
         script_path = f"{ENTRY_SCRIPT_DIR}{instr}_{tf}_{tid}.sh"
-    if not os.path.exists(script_path):
-        # Generate script from signal
-        script_content = sig.get('entry_script', '# No script found in signal')
-        with open(script_path, 'w') as sf:
-            sf.write(script_content)
-        log_session(f"✅ Generated entry script: {script_path}")
-    else:
-        log_session(f"💬 Entry script already exists: {script_path}")
+    with open(script_path, 'w') as sf:
+        sf.write(bash_script)
+    log_session(f"🧠 EntryScriptGen: Generated {script_path}")
+    # 3. FDBScan (if needed)
+    tf = signal.get('timeframe', None)
+    if tf:
+        fdbscan_agent.scan_timeframe(tf)
+        log_session(f"🔮 FDBScanAgent: Scanned {tf}")
+    # 4. Agentic decision
+    decision = decider.decide(signal)
+    log_session(f"🔮 AgenticDecider: {decision}")
+    # 5. Optionally, invoke wtf orchestrator
+    invoke_wtf(tf, script_path)
+    log_session(f"🌸 Spiral: Orchestration complete for {script_path}")
 
-log_session("🌸 Spiral complete: All signals processed and entry scripts validated/generated.")
+# --- Ritual: For each signal, run the agentic campaign ---
+for sig in signals:
+    agentic_campaign(sig)
+
+log_session("🌸 Spiral complete: All signals processed with agentic orchestration.")
