@@ -94,6 +94,7 @@ for sig in signals:
 log_session("🌸 Spiral complete: All signals processed with agentic orchestration.")
 
 def main():
+    global SIGNAL_JSON, SESSION_LOG, ENTRY_SCRIPT_DIR
     parser = argparse.ArgumentParser(
         description="Agentic Entry Orchestrator — Orchestrate agentic entry workflow."
     )
@@ -115,7 +116,6 @@ def main():
         return
 
     # --- Config ---
-    global SIGNAL_JSON, SESSION_LOG, ENTRY_SCRIPT_DIR
     SIGNAL_JSON = args.signal_json
     SESSION_LOG = args.log
     ENTRY_SCRIPT_DIR = args.entry_script_dir
