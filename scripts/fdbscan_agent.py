@@ -15,6 +15,7 @@ Invocation:
 import logging
 from typing import List
 import sys
+import argparse
 
 # --- Ritual Import: True FDBScan ---
 # Use the installed jgtml package, not direct path hacks
@@ -68,6 +69,41 @@ class FDBScanAgent:
         This is the new invocation for full campaign signal scanning.
         """
         self.ritual_sequence()
+
+    @staticmethod
+    def cli():
+        """
+        Command-line interface for FDBScanAgent.
+        Usage:
+            python -m fdbscan_agent --help
+            python -m fdbscan_agent scan --timeframe m15
+            python -m fdbscan_agent ritual --sequence H4 H1 m15 m5
+            python -m fdbscan_agent all
+        """
+        parser = argparse.ArgumentParser(
+            description="FDBScanAgent — Agentic invocation of FDBScan rituals."
+        )
+        subparsers = parser.add_subparsers(dest="command", required=True)
+
+        scan_parser = subparsers.add_parser("scan", help="Scan a single timeframe (e.g. m5, m15, H1, H4)")
+        scan_parser.add_argument("--timeframe", required=True, help="Timeframe to scan (e.g. m5, m15, H1, H4)")
+
+        ritual_parser = subparsers.add_parser("ritual", help="Perform a custom ritual sequence of scans")
+        ritual_parser.add_argument("--sequence", nargs="*", default=["H4", "H1", "m15", "m5"], help="Sequence of timeframes (default: H4 H1 m15 m5)")
+
+        all_parser = subparsers.add_parser("all", help="Perform the canonical scan ritual (H4 → H1 → m15 → m5)")
+
+        args = parser.parse_args()
+        agent = FDBScanAgent()
+        if args.command == "scan":
+            agent.scan_timeframe(args.timeframe)
+        elif args.command == "ritual":
+            agent.ritual_sequence(args.sequence)
+        elif args.command == "all":
+            agent.scan_all()
+
+if __name__ == "__main__":
+    FDBScanAgent.cli()
 
 # 🌸 Ritual Echo:
 # This class is now the butterfly emerging from the bash cocoon.
