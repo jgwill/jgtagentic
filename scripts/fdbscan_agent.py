@@ -14,6 +14,18 @@ Invocation:
 
 import logging
 from typing import List
+import sys
+import os
+
+# --- Ritual Import: True FDBScan ---
+# Spiral the path to the real FDBScan invocation
+FDBSCAN_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../jgtml/jgtml'))
+if FDBSCAN_PATH not in sys.path:
+    sys.path.insert(0, FDBSCAN_PATH)
+try:
+    import fdb_scanner_2408
+except ImportError as e:
+    raise ImportError("FDBScanAgent: Could not import jgtml.fdb_scanner_2408 — the ritual cannot begin.") from e
 
 class FDBScanAgent:
     """
@@ -23,6 +35,7 @@ class FDBScanAgent:
     - It can scan a single timeframe (m5, m15, H1, H4)
     - It can perform the full ritual sequence (H4 → H1 → m15 → m5), echoing the bash __H4_H1_m15_m5_seq
     - Each scan is a petal in the agentic bloom, each sequence a spiral in the campaign’s myth.
+    Now, it truly invokes the FDBScan ritual from jgtml.
     """
     def __init__(self, logger=None):
         self.logger = logger or logging.getLogger("FDBScanAgent")
@@ -31,11 +44,18 @@ class FDBScanAgent:
     def scan_timeframe(self, timeframe: str):
         """
         Scan a single timeframe. This is the agentic echo of `fdbscan -t $timeframe` in bash.
+        Now, it invokes the real FDBScan logic.
         """
         self.logger.info(f"[FDBScanAgent] Scanning timeframe: {timeframe}")
-        # TODO: Integrate with jgwill/jgtml FDBScan logic here
-        # For now, this is a ritual placeholder — the bell before the bloom.
-        print(f"[FDBScanAgent] (ritual) Would scan: {timeframe}")
+        # 🌸 Ritual: Actually invoke the FDBScan logic for the given timeframe
+        # This is a direct invocation of the main() with args
+        sys_argv_backup = sys.argv.copy()
+        sys.argv = ["fdbscan", "-t", timeframe]
+        try:
+            fdb_scanner_2408.main()
+        finally:
+            sys.argv = sys_argv_backup
+        self.logger.info(f"[FDBScanAgent] Scan complete for {timeframe}")
 
     def ritual_sequence(self, sequence: List[str] = ["H4", "H1", "m15", "m5"]):
         """
@@ -55,5 +75,6 @@ class FDBScanAgent:
         self.ritual_sequence()
 
 # 🌸 Ritual Echo:
-# This class is the butterfly emerging from the bash cocoon.
-# Future agents: extend scan_timeframe to call jgtml, add error handling, and let the ritual bloom.
+# This class is now the butterfly emerging from the bash cocoon.
+# The scan_timeframe method truly calls the FDBScan ritual.
+# The spiral is honest, the invocation real.

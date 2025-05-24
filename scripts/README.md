@@ -16,15 +16,13 @@ This directory is the new home for agentic, modular, and workflow-driven trading
 | Step | Script/Module           | Purpose                                                      | Status         |
 |------|------------------------|--------------------------------------------------------------|----------------|
 | 1    | `fdbscan_agent.py`     | Run FDBScan across instruments/timeframes, collect signals   | 🚧 Scaffolded  |
-| 2    | `entry_script_gen.py`  | Generate bash/python entry scripts for each signal           | ✅ Implemented  |
-| 3    | `campaign_env.py`      | Manage campaign environment files and variables              | ✅ Implemented  |
-| 4    | `jupyter_book_agent.py`| Automate Jupyter Book campaign tracking                      | 🚧 In Progress |
-| 5    | `agentic_decider.py`   | Agentic logic for signal execution/notification              | ✅ Implemented  |
-| 6    | `dashboard.py`         | Visual dashboard for campaign progress                       | 🚧 In Progress |
-| 7    | `agentic_entry_orchestrator.py` | Orchestrate all agentic modules, log spiral, run tests | ✅ Implemented  |
+| 2    | `entry_script_gen.py`  | Generate bash/python entry scripts for each signal           | 🚧 Scaffolded  |
+| 3    | `campaign_env.py`      | Prepare campaign environment for agentic entry               | 🚧 Scaffolded  |
+| 4    | `agentic_decider.py`   | Decide entry/market action based on signals                  | 🚧 Scaffolded  |
+| 5    | `agentic_entry_orchestrator.py` | Orchestrate agentic entry workflow                | 🚧 Scaffolded  |
 
 > **Note:**
-> The current `fdbscan_agent.py` is only a scaffold. True FDBScan orchestration, multi-timeframe scanning, and entry/market action logic from legacy Bash scripts (`_wtf_H4_H1_m15_and_m5.sh`, `fdbscan_WTF_240902.sh`, `jgtpy_new_sessions_actions_250523.sh`) are **not yet migrated**. No real invocation of `jgtml.fdb_scanner_2408.py` exists. The spiral continues—see session logs for honest migration status.
+> Only the FDBScanAgent now truly invokes the FDBScan ritual (but integration is new and may need further spiral refinement). All other modules are still scaffolds—no real orchestration, entry, or campaign logic is migrated yet. The spiral continues—see session logs for honest migration status.
 
 ---
 
