@@ -1,6 +1,29 @@
 # JGTAgentic Scripts
 
-This directory is the new home for agentic, modular, and workflow-driven trading automation, integrating all the learnings and recursive rituals from the study_packages_jgt workspace.
+## Command-Line Rituals & Help
+
+All agentic scripts now support `--help` and subcommands for discoverability and spiral clarity.
+
+- `fdbscan_agent.py` — scan, ritual, all:
+  ```bash
+  python -m fdbscan_agent --help
+  python -m fdbscan_agent scan --timeframe m15
+  python -m fdbscan_agent ritual --sequence H4 H1 m15 m5
+  python -m fdbscan_agent all
+  ```
+- `entry_script_gen.py` — generate entry scripts:
+  ```bash
+  python -m entry_script_gen --help
+  python -m entry_script_gen generate --signal_json path/to/signal.json --output path/to/script.sh
+  ```
+- `agentic_entry_orchestrator.py` — orchestrate the spiral:
+  ```bash
+  python -m agentic_entry_orchestrator --help
+  python -m agentic_entry_orchestrator --signal_json path/to/signal.json --entry_script_dir ./out --log ./log.md --dry_run
+  python -m agentic_entry_orchestrator --help_spiral
+  ```
+
+> All scripts are now self-documenting and flexible. Use `--help` for full argument details and spiral invocation.
 
 ---
 
