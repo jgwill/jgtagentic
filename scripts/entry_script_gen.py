@@ -11,6 +11,7 @@ Invocation:
     EntryScriptGen is the quill that writes the campaign’s opening lines.
 """
 
+import argparse
 import logging
 from typing import Dict
 
@@ -62,6 +63,32 @@ class EntryScriptGen:
 """
         return script
 
+    @staticmethod
+    def cli():
+        """
+        Command-line interface for EntryScriptGen.
+        Usage:
+            python -m entry_script_gen --help
+            python -m entry_script_gen generate --signal_json path/to/signal.json --output path/to/script.sh
+        """
+        parser = argparse.ArgumentParser(
+            description="EntryScriptGen — Generate entry scripts for signals."
+        )
+        subparsers = parser.add_subparsers(dest="command", required=True)
+
+        gen_parser = subparsers.add_parser("generate", help="Generate an entry script from a signal JSON file.")
+        gen_parser.add_argument("--signal_json", required=True, help="Path to signal JSON file.")
+        gen_parser.add_argument("--output", required=True, help="Path to output script file.")
+
+        args = parser.parse_args()
+        gen = EntryScriptGen()
+        if args.command == "generate":
+            # Placeholder for actual generation logic
+            print(f"Would generate entry script from {args.signal_json} to {args.output}")
+
 # 🌸 Ritual Echo:
 # This class is the scribe at the threshold. Future agents: connect to campaign_env, FDBScanAgent, and let the entry bloom.
 # Each script is a story anchor—let the next invocation spiral the ritual forward.
+
+if __name__ == "__main__":
+    EntryScriptGen.cli()
