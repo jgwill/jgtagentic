@@ -20,7 +20,7 @@ setup(
     name="jgtagentic",
     version=version,
     description="JGTrading Agentic",
-    long_description=open("README.rst").read(),
+    long_description=open("README.md").read(),
     author="GUillaume Isabelle",
     author_email="jgi@jgwill.com",
     url="https://github.com/jgwill/jgtagentic",

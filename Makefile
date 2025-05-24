@@ -33,21 +33,11 @@ test:
 readme_check:
 	./setup.py check --restructuredtext --strict
 
-.PHONY: rst_check
-rst_check:
-	make readme_check
-	# Doesn't generate any output but prints out errors and warnings.
-	make -C docs dummy
-
 .PHONY: clean
 clean:
 	find . -name "*.pyc" -print0 | xargs -0 rm -f
 	rm -Rf dist
 	rm -Rf *.egg-info
-
-.PHONY: docs
-docs:
-	cd docs && make html
 
 .PHONY: authors
 authors:
