@@ -62,9 +62,14 @@ classifiers = [
 
 
 [project.scripts]
-jgtagentic = "jgtagentic.jgtagentcli:main"
-
-fdbloopscan = "jgtagentic.fdbloopscan:main"
-
+jgtagentic = "jgtagentic.jgtagenticcli:main"
+agenticfdbscan = "jgtagentic.fdbscan_agent:main"
+agentic-orchestrator = "jgtagentic.agentic_entry_orchestrator:main"
+entry-script-gen = "jgtagentic.entry_script_gen:cli"
+# fdbloopscan = "jgtagentic.fdbloopscan:main"  # Not implemented yet
+# dashboard = "jgtagentic.dashboard:main"  # No CLI
+# campaign-env = "jgtagentic.campaign_env:main"  # No CLI
+# agentic-decider = "jgtagentic.agentic_decider:main"  # No CLI
+# jupyter-book-agent = "jgtagentic.jupyter_book_agent:main"  # No CLI
 
 

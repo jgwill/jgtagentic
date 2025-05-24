@@ -1,3 +1,5 @@
+.env
+.env.*
 
 jgtpy/History
 config.json
