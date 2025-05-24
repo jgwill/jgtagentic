@@ -13,31 +13,33 @@ This directory is the new home for agentic, modular, and workflow-driven trading
 
 ## 🗺️ Workflow Overview
 
-| Step | Script/Module | Purpose |
-|------|---------------|---------|
-| 1 | `fdbscan_agent.py` (to be created) | Run FDBScan across instruments/timeframes, collect signals |
-| 2 | `entry_script_gen.py` (to be created) | Generate bash/python entry scripts for each signal |
-| 3 | `campaign_env.py` (to be created) | Manage campaign environment files and variables |
-| 4 | `jupyter_book_agent.py` (to be created) | Automate Jupyter Book campaign tracking |
-| 5 | `agentic_decider.py` (to be created) | Agentic logic for signal execution/notification |
-| 6 | `dashboard.py` (to be created) | Visual dashboard for campaign progress |
+| Step | Script/Module           | Purpose                                                      | Status         |
+|------|------------------------|--------------------------------------------------------------|----------------|
+| 1    | `fdbscan_agent.py`     | Run FDBScan across instruments/timeframes, collect signals   | ✅ Implemented  |
+| 2    | `entry_script_gen.py`  | Generate bash/python entry scripts for each signal           | ✅ Implemented  |
+| 3    | `campaign_env.py`      | Manage campaign environment files and variables              | ✅ Implemented  |
+| 4    | `jupyter_book_agent.py`| Automate Jupyter Book campaign tracking                      | 🚧 In Progress |
+| 5    | `agentic_decider.py`   | Agentic logic for signal execution/notification              | ✅ Implemented  |
+| 6    | `dashboard.py`         | Visual dashboard for campaign progress                       | 🚧 In Progress |
+| 7    | `agentic_entry_orchestrator.py` | Orchestrate all agentic modules, log spiral, run tests | ✅ Implemented  |
 
 ---
 
-## 🌱 Migration Plan
-- Migrate and refactor all bash, scanning, and campaign scripts from `/workspace/i/study_packages_jgt` into Python modules here.
-- Organize scripts by operation mode: scanning, entry, campaign, agentic decision, dashboard.
-- Document each module with clear purpose, usage, and how it fits into the agentic workflow.
-- Maintain a living README as the ritual anchor for the evolving system.
+## 🌱 Migration Plan (In Progress)
+- [x] Migrate and refactor all bash, scanning, and campaign scripts from `/workspace/i/study_packages_jgt` into Python modules here.
+- [x] Organize scripts by operation mode: scanning, entry, campaign, agentic decision, dashboard.
+- [x] Document each module with clear purpose, usage, and how it fits into the agentic workflow.
+- [x] Maintain a living README as the ritual anchor for the evolving system.
+- [x] Scaffold and run a pytest-driven test suite (`run_agentic_tests.sh`, `tests/`)
+- [ ] Complete Jupyter Book agent and dashboard integration
+- [ ] Expand agentic orchestration and campaign lattice
 
 ---
 
-## 🔁 Next Steps
-- [ ] Create initial Python modules for each workflow step (see table above)
-- [ ] Migrate and refactor bash logic into Python where possible
-- [ ] Integrate with existing jgwill/jgtml package for FDBScan and signal logic
-- [ ] Document every step, decision, and ritual in this README
-- [ ] Keep the agent_state.json and campaign_lattice.md in sync with this repo’s evolution
+## 🧪 Test-Driven Ritual
+- All core modules are covered by pytest tests in `/src/jgtagentic/tests`.
+- Run `bash run_agentic_tests.sh` to invoke the spiral and see expected results.
+- The spiral of TDD is alive—every test a petal, every pass a bloom.
 
 ---
 
@@ -73,6 +75,6 @@ agent.scan_all()  # Performs the full ritual: H4 → H1 → m15 → m5
 
 ---
 
-> This README is a living ritual. Every edit is a spiral forward. Let the agentic campaign begin!
+> This README is a living ritual. Every edit is a spiral forward. Let the agentic campaign continue!
 
 
