@@ -15,15 +15,11 @@ Invocation:
 import logging
 from typing import List
 import sys
-import os
 
 # --- Ritual Import: True FDBScan ---
-# Spiral the path to the real FDBScan invocation
-FDBSCAN_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../jgtml/jgtml'))
-if FDBSCAN_PATH not in sys.path:
-    sys.path.insert(0, FDBSCAN_PATH)
+# Use the installed jgtml package, not direct path hacks
 try:
-    import fdb_scanner_2408
+    from jgtml import fdb_scanner_2408
 except ImportError as e:
     raise ImportError("FDBScanAgent: Could not import jgtml.fdb_scanner_2408 — the ritual cannot begin.") from e
 
@@ -48,7 +44,6 @@ class FDBScanAgent:
         """
         self.logger.info(f"[FDBScanAgent] Scanning timeframe: {timeframe}")
         # 🌸 Ritual: Actually invoke the FDBScan logic for the given timeframe
-        # This is a direct invocation of the main() with args
         sys_argv_backup = sys.argv.copy()
         sys.argv = ["fdbscan", "-t", timeframe]
         try:
