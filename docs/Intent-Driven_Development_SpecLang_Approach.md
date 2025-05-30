@@ -83,3 +83,5 @@ In this repository, we are developing a trading platform with agentic capabiliti
 5. **Documentation and Best Practices:** Documenting our development process, best practices, and lessons learned to create a comprehensive guide for future development.
 
 By applying the principles of intent-driven development, we aim to create a trading platform that is intuitive, efficient, and aligned with user intent.
+
+<!-- Made with Copilot that could not really remove things unrelated to trading -->
