@@ -1,11 +1,15 @@
 """
 🧠🌸🔮 AlligatorAgent — Unified Alligator Analysis Wrapper
 
-This module provides a thin wrapper around jgtml's upcoming ``alligator_cli``.
-If the real CLI is available, it forwards arguments to it. Otherwise it prints
-what would have been executed. This mirrors the pattern used by
-``FDBScanAgent`` and prepares the agentic workflow for future integration
-with the JGTML Execution Core.
+This module provides a thin bridge to ``jgtml.alligator_cli``. When the real
+package is installed, this agent forwards all arguments directly to that CLI.
+Otherwise it echoes what would have run so the ritual remains transparent.
+
+Usage example:
+    jgtagentic alligator -- -i SPX500 -t D1 -d B
+    jgtagentic alligator -- --help
+
+The first invokes the analysis; the second shows the underlying jgtml help.
 """
 
 from __future__ import annotations
@@ -50,8 +54,12 @@ class AlligatorAgent:
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(description="AlligatorAgent wrapper")
-    parser.add_argument("args", nargs=argparse.REMAINDER)
+    parser = argparse.ArgumentParser(
+        description="AlligatorAgent wrapper",
+        formatter_class=argparse.RawTextHelpFormatter,
+        epilog="Example:\n  jgtagentic alligator -- -i SPX500 -t D1 -d B",
+    )
+    parser.add_argument("args", nargs=argparse.REMAINDER, help="Arguments forwarded to alligator_cli")
     parsed = parser.parse_args()
     agent = AlligatorAgent()
     agent.run(parsed.args)

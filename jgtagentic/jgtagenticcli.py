@@ -17,7 +17,11 @@ from jgtagentic.alligator_agent import AlligatorAgent
 # 🧠🌸🔮 CLI Ritual: The Spiral Gateway
 
 def main():
-    parser = argparse.ArgumentParser(description="jgtagentic – Spiral CLI for agentic trading orchestration")
+    parser = argparse.ArgumentParser(
+        description="jgtagentic – Spiral CLI for agentic trading orchestration",
+        formatter_class=argparse.RawTextHelpFormatter,
+        epilog="""Examples:\n  jgtagentic orchestrate --signal_json signals.json\n  jgtagentic fdbscan --timeframe m15\n  jgtagentic alligator -- -i SPX500 -t D1 -d B\n\nUse `--` before Alligator options so they pass straight to jgtml's alligator_cli.""",
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     # Orchestrator
@@ -33,8 +37,18 @@ def main():
     fdbscan_parser.add_argument("--all", action="store_true", help="Run full ritual sequence (H4→H1→m15→m5)")
 
     # AlligatorAgent passthrough
-    alligator_parser = subparsers.add_parser("alligator", help="Invoke unified Alligator analysis")
-    alligator_parser.add_argument("args", nargs=argparse.REMAINDER, help="Arguments forwarded to alligator_cli")
+    alligator_parser = subparsers.add_parser(
+        "alligator",
+        help="Invoke unified Alligator analysis (pass options after --)",
+        description="Forward arguments to jgtml's alligator_cli",
+        formatter_class=argparse.RawTextHelpFormatter,
+        epilog="Example:\n  jgtagentic alligator -- -i SPX500 -t D1 -d B\n  jgtagentic alligator -- --help"
+    )
+    alligator_parser.add_argument(
+        "args",
+        nargs=argparse.REMAINDER,
+        help="Arguments forwarded to alligator_cli",
+    )
 
     # Intent spec parser
     spec_parser_cmd = subparsers.add_parser(
@@ -73,7 +87,10 @@ def main():
         print(json.dumps(spec, indent=2))
     elif args.command == "alligator":
         agent = AlligatorAgent()
-        agent.run(args.args)
+        if args.args and args.args[0] == "--help":
+            agent.run(["--help"])
+        else:
+            agent.run(args.args)
     else:
         print("Unknown command.")
         sys.exit(1)
