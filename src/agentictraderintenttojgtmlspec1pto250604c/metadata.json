@@ -1,0 +1,5 @@
+{
+  "name": "AgenticTraderIntenttoJGTMLSpec1Pto250604c",
+  "description": "A web application to capture trader intent, translate it via LLM to a JGTML spec, and visualize the (simulated) parsing process. This showcases a flow from natural language trading ideas to structured, machine-readable specifications.",
+  "requestFramePermissions": []
+}
