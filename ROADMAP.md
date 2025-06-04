@@ -9,4 +9,5 @@ This roadmap highlights upcoming features for the agentic trading tools.
 - **Future Goals**
   - Map parsed intent directly into FDBScan and entry workflows.
   - Store intent-driven performance metrics for recursive learning.
+  - Develop a translator LLM that converts trader narration into `.jgtml-spec` files (see `docs/Trader_Analysis_to_Spec.md`).
 
