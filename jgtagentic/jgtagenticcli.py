@@ -10,6 +10,7 @@ sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 from fdbscan_agent import FDBScanAgent
 from agentic_entry_orchestrator import main as orchestrator_main
+from intent_spec import IntentSpecParser
 
 # 🧠🌸🔮 CLI Ritual: The Spiral Gateway
 
@@ -28,6 +29,12 @@ def main():
     fdbscan_parser = subparsers.add_parser("fdbscan", help="Invoke FDBScanAgent CLI")
     fdbscan_parser.add_argument("--timeframe", help="Timeframe to scan (e.g. m5, m15, H1, H4)", default=None)
     fdbscan_parser.add_argument("--all", action="store_true", help="Run full ritual sequence (H4→H1→m15→m5)")
+
+    # Intent spec parser
+    spec_parser_cmd = subparsers.add_parser(
+        "spec", help="Parse a .jgtml-spec file and echo signals"
+    )
+    spec_parser_cmd.add_argument("spec_file", help="Path to intent specification")
 
     args = parser.parse_args()
 
@@ -52,6 +59,11 @@ def main():
         else:
             print("Please specify --timeframe or --all for fdbscan.")
             sys.exit(1)
+    elif args.command == "spec":
+        parser = IntentSpecParser()
+        spec = parser.load(args.spec_file)
+        import json
+        print(json.dumps(spec, indent=2))
     else:
         print("Unknown command.")
         sys.exit(1)

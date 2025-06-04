@@ -1,0 +1,10 @@
+{
+  "agents": ["📖 William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine"],
+  "narrative": "Introduced an IntentSpecParser to parse .jgtml-spec files and added a CLI command to expose it. Documented the roadmap for Intent-Driven Trading.",
+  "routing": {
+    "files": ["jgtagentic/intent_spec.py", "jgtagentic/jgtagenticcli.py", "tests/test_intent_spec.py", "README.md", "ROADMAP.md"],
+    "branches": ["work"],
+    "operation": "intent_spec_feature"
+  },
+  "timestamp": "2506041849"
+}
