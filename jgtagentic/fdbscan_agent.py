@@ -139,8 +139,12 @@ class FDBScanAgent:
         elif args.command == "all":
             agent.scan_all()
 
-if __name__ == "__main__":
+def main():
+    """Entry point for the ``agentic-fdbscan`` console script."""
     FDBScanAgent.cli()
+
+if __name__ == "__main__":
+    main()
 
 # 🌸 Ritual Echo:
 # This class is now the butterfly emerging from the bash cocoon.
