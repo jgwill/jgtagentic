@@ -6,7 +6,6 @@ import tempfile
 import shutil
 import pytest
 
-# Ensure the package itself is importable during tests
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from jgtagentic.entry_script_gen import EntryScriptGen
 from jgtagentic.fdbscan_agent import FDBScanAgent

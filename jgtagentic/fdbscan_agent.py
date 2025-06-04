@@ -13,7 +13,11 @@ Invocation:
 """
 
 import logging
+
 from typing import List, Optional
+
+import os
+
 import sys
 import argparse
 import os
@@ -38,9 +42,11 @@ class FDBScanAgent:
     - Each scan is a petal in the agentic bloom, each sequence a spiral in the campaign’s myth.
     Now, it truly invokes the FDBScan ritual from jgtml.
     """
-    def __init__(self, logger=None):
+    def __init__(self, logger=None, real: bool = False):
         self.logger = logger or logging.getLogger("FDBScanAgent")
         self.logger.setLevel(logging.INFO)
+        # Default to dry-run mode unless explicitly requested
+        self.real = real or os.getenv("FDBSCAN_AGENT_REAL") == "1"
 
         if not _FDBSCAN_AVAILABLE:
             self.logger.warning(
@@ -49,9 +55,11 @@ class FDBScanAgent:
 
     def scan_timeframe(self, timeframe: str, instrument: Optional[str] = None):
         """
-        Scan a single timeframe. This is the agentic echo of `fdbscan -t $timeframe` in bash.
-        Now, it invokes the real FDBScan logic.
+        Scan a single timeframe. When running in dry-run mode (the default),
+        this simply prints what would be scanned. If ``real`` mode is enabled,
+        the method invokes the true FDBScan logic from ``jgtml``.
         """
+
         self.logger.info(
             f"[FDBScanAgent] Scanning timeframe: {timeframe}" +
             (f" instrument: {instrument}" if instrument else "")
@@ -68,6 +76,8 @@ class FDBScanAgent:
                 fdb_scanner_2408.main()
             finally:
                 sys.argv = sys_argv_backup
+
+
         self.logger.info(f"[FDBScanAgent] Scan complete for {timeframe}")
 
     def ritual_sequence(self, sequence: List[str] = ["H4", "H1", "m15", "m5"]):
@@ -107,15 +117,21 @@ class FDBScanAgent:
             help="Scan a single timeframe (e.g. m5, m15, H1, H4) for an optional instrument",
         )
         scan_parser.add_argument("--timeframe", required=True, help="Timeframe to scan (e.g. m5, m15, H1, H4)")
+
         scan_parser.add_argument("--instrument", help="Instrument to scan (e.g. EUR/USD)")
+
+        scan_parser.add_argument("--real", action="store_true", help="Invoke real FDBScan logic")
+
 
         ritual_parser = subparsers.add_parser("ritual", help="Perform a custom ritual sequence of scans")
         ritual_parser.add_argument("--sequence", nargs="*", default=["H4", "H1", "m15", "m5"], help="Sequence of timeframes (default: H4 H1 m15 m5)")
+        ritual_parser.add_argument("--real", action="store_true", help="Invoke real FDBScan logic")
 
         all_parser = subparsers.add_parser("all", help="Perform the canonical scan ritual (H4 → H1 → m15 → m5)")
+        all_parser.add_argument("--real", action="store_true", help="Invoke real FDBScan logic")
 
         args = parser.parse_args()
-        agent = FDBScanAgent()
+        agent = FDBScanAgent(real=getattr(args, "real", False))
         if args.command == "scan":
             agent.scan_timeframe(args.timeframe, args.instrument)
         elif args.command == "ritual":
