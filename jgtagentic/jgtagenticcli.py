@@ -12,6 +12,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 from jgtagentic.fdbscan_agent import FDBScanAgent
 from jgtagentic.intent_spec import IntentSpecParser
+from jgtagentic.alligator_agent import AlligatorAgent
 
 # 🧠🌸🔮 CLI Ritual: The Spiral Gateway
 
@@ -30,6 +31,10 @@ def main():
     fdbscan_parser = subparsers.add_parser("fdbscan", help="Invoke FDBScanAgent CLI")
     fdbscan_parser.add_argument("--timeframe", help="Timeframe to scan (e.g. m5, m15, H1, H4)", default=None)
     fdbscan_parser.add_argument("--all", action="store_true", help="Run full ritual sequence (H4→H1→m15→m5)")
+
+    # AlligatorAgent passthrough
+    alligator_parser = subparsers.add_parser("alligator", help="Invoke unified Alligator analysis")
+    alligator_parser.add_argument("args", nargs=argparse.REMAINDER, help="Arguments forwarded to alligator_cli")
 
     # Intent spec parser
     spec_parser_cmd = subparsers.add_parser(
@@ -66,6 +71,9 @@ def main():
         spec = parser.load(args.spec_file)
         import json
         print(json.dumps(spec, indent=2))
+    elif args.command == "alligator":
+        agent = AlligatorAgent()
+        agent.run(args.args)
     else:
         print("Unknown command.")
         sys.exit(1)
