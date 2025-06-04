@@ -9,11 +9,10 @@ import sys
 import subprocess
 import argparse
 
-sys.path.append('/src/jgtagentic/scripts')
-from entry_script_gen import EntryScriptGen
-from fdbscan_agent import FDBScanAgent
-from campaign_env import CampaignEnv
-from agentic_decider import AgenticDecider
+from .entry_script_gen import EntryScriptGen
+from .fdbscan_agent import FDBScanAgent
+from .campaign_env import CampaignEnv
+from .agentic_decider import AgenticDecider
 
 # --- Config ---
 SIGNAL_JSON = '/workspace/i/data/jgt/signals/fdb_signals_out__250523.json'
