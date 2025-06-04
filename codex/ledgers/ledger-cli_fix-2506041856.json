@@ -1,0 +1,10 @@
+{
+  "agents": ["📖 William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine"],
+  "narrative": "Adjusted CLI imports so running jgtagenticcli directly no longer triggers orchestrator side effects. Now it dynamically loads the orchestrator only when needed, preventing missing path errors and enabling --help to function.",
+  "routing": {
+    "files": ["jgtagentic/jgtagenticcli.py"],
+    "branches": ["work"],
+    "operation": "cli_help_fix"
+  },
+  "timestamp": "2506041856"
+}

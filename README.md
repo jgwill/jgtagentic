@@ -9,6 +9,8 @@ This package now exposes a set of honest, agentic CLI entrypoints, each a petal 
 - **jgtagentic** — The Spiral Gateway
   - `orchestrate` — Run the full agentic entry orchestrator (parse signals, generate scripts, log, and spiral the workflow)
   - `fdbscan` — Invoke the FDBScanAgent for timeframe scans or full ritual sequence
+  - `spec` — Parse `.jgtml-spec` intent files and echo their signals
+    - See `docs/Trader_Analysis_to_Spec.md` for guidance on translating spoken market analysis into a spec file
 
 - **agentic-fdbscan** — Direct invocation of FDBScanAgent rituals
 - **agentic-orchestrator** — Process signals and generate entry scripts with optional FDBScan
@@ -41,6 +43,10 @@ agentic-orchestrator --signal_json <path> --entry_script_dir <dir> --log <logfil
 # Scan a specific timeframe
 python -m jgtagentic.jgtagenticcli fdbscan --timeframe m15
 agentic-fdbscan scan --timeframe m15 --instrument EUR/USD
+
+# Parse an intent specification
+python -m jgtagentic.jgtagenticcli spec path/to/spec.jgtml-spec
+# See docs/Trader_Analysis_to_Spec.md for how to craft these spec files from trader insights
 
 # Add ``--real`` to invoke the true jgtml fdbscan command (requires
 # ``jgtml`` to be installed). You can also set ``FDBSCAN_AGENT_REAL=1`` to
