@@ -65,7 +65,21 @@ class FDBScanAgent:
             (f" instrument: {instrument}" if instrument else "")
         )
         if not _FDBSCAN_AVAILABLE:
-            print(f"Would scan: {timeframe}" + (f" for {instrument}" if instrument else ""))
+            print(
+                f"Would scan: {timeframe}" +
+                (f" for {instrument}" if instrument else "")
+            )
+            if fdb_scanner_2408 is not None:
+                print("\n[FDBScanAgent] Placeholder mode — showing fdbscan help:\n")
+                argv_backup = sys.argv.copy()
+                sys.argv = ["fdbscan", "--help"]
+                try:
+                    try:
+                        fdb_scanner_2408.main()
+                    except SystemExit:
+                        pass
+                finally:
+                    sys.argv = argv_backup
         else:
             sys_argv_backup = sys.argv.copy()
             sys.argv = ["fdbscan"]
@@ -139,8 +153,12 @@ class FDBScanAgent:
         elif args.command == "all":
             agent.scan_all()
 
-if __name__ == "__main__":
+def main():
+    """Entry point for the ``agentic-fdbscan`` console script."""
     FDBScanAgent.cli()
+
+if __name__ == "__main__":
+    main()
 
 # 🌸 Ritual Echo:
 # This class is now the butterfly emerging from the bash cocoon.
