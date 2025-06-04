@@ -6,8 +6,12 @@ import tempfile
 import shutil
 import pytest
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../scripts')))
-from agentic_entry_orchestrator import EntryScriptGen, FDBScanAgent, CampaignEnv, AgenticDecider
+# Ensure the package itself is importable
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from jgtagentic.entry_script_gen import EntryScriptGen
+from jgtagentic.fdbscan_agent import FDBScanAgent
+from jgtagentic.campaign_env import CampaignEnv
+from jgtagentic.agentic_decider import AgenticDecider
 
 # --- Fixtures ---
 @pytest.fixture
