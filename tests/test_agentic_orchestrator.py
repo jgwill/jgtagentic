@@ -47,6 +47,29 @@ def test_fdbscan_agent_scan_timeframe(capsys):
     out = capsys.readouterr().out
     assert 'Would scan: m5' in out
 
+def test_fdbscan_agent_real_flag_without_scanner(monkeypatch, capsys):
+    monkeypatch.setattr('jgtagentic.fdbscan_agent._FDBSCAN_AVAILABLE', False)
+    agent = FDBScanAgent(real=True)
+    agent.scan_timeframe('m5')
+    out = capsys.readouterr().out
+    assert 'Real mode requested' in out
+    assert 'Would scan: m5' in out
+
+def test_fdbscan_agent_real_flag_with_scanner(monkeypatch, capsys):
+    calls = []
+
+    def dummy_main():
+        print('real scan executed')
+        calls.append(True)
+
+    monkeypatch.setattr('jgtagentic.fdbscan_agent._FDBSCAN_AVAILABLE', True)
+    monkeypatch.setattr('jgtagentic.fdbscan_agent.fdb_scanner_2408', type('D', (), {'main': staticmethod(dummy_main)}))
+    agent = FDBScanAgent(real=True)
+    agent.scan_timeframe('m5', 'EUR/USD')
+    out = capsys.readouterr().out
+    assert 'real scan executed' in out
+    assert calls
+
 def test_agentic_decider_decide(sample_signal):
     decider = AgenticDecider()
     result = decider.decide(sample_signal)

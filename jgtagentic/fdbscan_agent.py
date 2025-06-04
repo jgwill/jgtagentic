@@ -27,7 +27,7 @@ import os
 # environment without the real trading dependencies, so the import may fail.
 try:
     from jgtml import fdb_scanner_2408
-    _FDBSCAN_AVAILABLE = bool(os.environ.get("JGT_ENABLE_REAL_FDBSCAN"))
+    _FDBSCAN_AVAILABLE = True
 except Exception:
     fdb_scanner_2408 = None
     _FDBSCAN_AVAILABLE = False
@@ -46,7 +46,11 @@ class FDBScanAgent:
         self.logger = logger or logging.getLogger("FDBScanAgent")
         self.logger.setLevel(logging.INFO)
         # Default to dry-run mode unless explicitly requested
-        self.real = real or os.getenv("FDBSCAN_AGENT_REAL") == "1"
+        self.real = (
+            real
+            or os.getenv("FDBSCAN_AGENT_REAL") == "1"
+            or os.getenv("JGT_ENABLE_REAL_FDBSCAN") == "1"
+        )
 
         if not _FDBSCAN_AVAILABLE:
             self.logger.warning(
@@ -64,7 +68,19 @@ class FDBScanAgent:
             f"[FDBScanAgent] Scanning timeframe: {timeframe}" +
             (f" instrument: {instrument}" if instrument else "")
         )
-        if not _FDBSCAN_AVAILABLE:
+        if self.real and _FDBSCAN_AVAILABLE:
+            sys_argv_backup = sys.argv.copy()
+            sys.argv = ["fdbscan"]
+            if instrument:
+                sys.argv += ["-i", instrument]
+            sys.argv += ["-t", timeframe]
+            try:
+                fdb_scanner_2408.main()
+            finally:
+                sys.argv = sys_argv_backup
+        else:
+            if self.real and not _FDBSCAN_AVAILABLE:
+                print("[FDBScanAgent] Real mode requested but jgtml.fdb_scanner_2408 not available.")
             print(
                 f"Would scan: {timeframe}" +
                 (f" for {instrument}" if instrument else "")
@@ -80,16 +96,6 @@ class FDBScanAgent:
                         pass
                 finally:
                     sys.argv = argv_backup
-        else:
-            sys_argv_backup = sys.argv.copy()
-            sys.argv = ["fdbscan"]
-            if instrument:
-                sys.argv += ["-i", instrument]
-            sys.argv += ["-t", timeframe]
-            try:
-                fdb_scanner_2408.main()
-            finally:
-                sys.argv = sys_argv_backup
 
 
         self.logger.info(f"[FDBScanAgent] Scan complete for {timeframe}")
