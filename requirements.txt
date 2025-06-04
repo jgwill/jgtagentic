@@ -10,4 +10,5 @@ langgraph
 langchain_ollama
 langchain_openai
 langsmith
-
+tushell
+coaiapy
