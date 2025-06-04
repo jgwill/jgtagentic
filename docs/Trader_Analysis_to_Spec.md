@@ -7,9 +7,10 @@ This guide explains how an LLM can listen to a trader's market analysis and tran
 When the trader describes the market, capture:
 
 - Instrument and timeframe observations
-- Indicator states (fractals, Alligator, AO momentum, etc.)
+- Indicator states (fractals, Alligator mouth states, AO momentum, etc.)
 - Pattern descriptions (Elliott Waves, consolidation, breakout levels)
 - Overall intent: trend following, breakout, reversal
+- Multi-timeframe confluence requirements
 
 ## 2. Map Observations to Spec Fields
 
@@ -17,10 +18,41 @@ Translate the narrative into the YAML fields expected by `.jgtml-spec`:
 
 - **`strategy_intent`** – summarize the trader's goal in plain language
 - **`instruments`** – list all pairs or assets discussed
-- **`timeframes`** – capture the timeframes referenced
+- **`timeframes`** – capture the timeframes referenced (supports full hierarchy: m1, m5, m15, H1, H4, D1, W1, MN)
 - **`signals`** – one or more named signals derived from the analysis
   - `description` – short explanation of the signal
-  - `jgtml_components` – map indicator mentions to the JGTML modules
+  - `jgtml_components` – map indicator mentions to the unified JGTML modules
+  - `alligator_context` – specify Regular, Big, or Tide Alligator for multi-timeframe analysis
+
+### JGTML Signal Component Mapping
+
+The consolidated AlligatorAnalysis module supports all three Alligator types:
+
+```yaml
+alligator_types:
+  regular:
+    periods: [5, 8, 13]  # Jaw, Teeth, Lips
+    purpose: "Primary timeframe trend analysis"
+    trader_language: ["trend establishment", "momentum confirmation"]
+    
+  big:
+    periods: [34, 55, 89]
+    purpose: "Higher timeframe structure validation" 
+    trader_language: ["pullback entry", "retest opportunity"]
+    
+  tide:
+    periods: [144, 233, 377]
+    purpose: "Macro trend environment"
+    trader_language: ["campaign direction", "major reversal confirmation"]
+```
+
+### Core Signal Types Available:
+- `all_evalname_signals` - Comprehensive signal evaluation across all contexts
+- `sig_normal_mouth_is_open` - Regular Alligator mouth open confirmation
+- `sig_is_out_of_normal_mouth` - Price outside Regular Alligator mouth (strong trend)
+- `sig_is_in_ctx_teeth` - Price at contextual Alligator teeth level (pullback entry)
+- `sig_ctx_mouth_is_open_and_in_ctx_teeth` - Contextual trend with teeth-level entry
+- `sig_ctx_mouth_is_open_and_in_ctx_lips` - Contextual trend with lips-level entry (aggressive)
 
 If the trader references wave counts or timeframe confluence, include them in signal descriptions or as custom keys.
 
