@@ -6,11 +6,12 @@
 import argparse
 import sys
 import os
-sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
-from fdbscan_agent import FDBScanAgent
-from agentic_entry_orchestrator import main as orchestrator_main
-from intent_spec import IntentSpecParser
+# Ensure package imports resolve when executed directly
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from jgtagentic.fdbscan_agent import FDBScanAgent
+from jgtagentic.intent_spec import IntentSpecParser
 
 # 🧠🌸🔮 CLI Ritual: The Spiral Gateway
 
@@ -39,7 +40,8 @@ def main():
     args = parser.parse_args()
 
     if args.command == "orchestrate":
-        # Pass through to orchestrator main
+        import runpy
+        # Reinvoke the orchestrator module as a script to avoid import side effects
         sys.argv = [sys.argv[0]]
         if args.signal_json:
             sys.argv += ["--signal_json", args.signal_json]
@@ -49,7 +51,7 @@ def main():
             sys.argv += ["--log", args.log]
         if args.dry_run:
             sys.argv += ["--dry_run"]
-        orchestrator_main()
+        runpy.run_module("jgtagentic.agentic_entry_orchestrator", run_name="__main__")
     elif args.command == "fdbscan":
         agent = FDBScanAgent()
         if args.all:
