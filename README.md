@@ -34,14 +34,17 @@ agentic-orchestrator --signal_json <path> --entry_script_dir <dir> --log <logfil
 # entry scripts and logs the spiral.
 
 # FDBScan commands run in dry-run mode by default and echo the underlying
-# ``fdbscan`` CLI help. Add ``--real`` to actually invoke jgtml's scanner.
+# ``fdbscan`` CLI help. Add ``--real`` (or set ``FDBSCAN_AGENT_REAL=1``) to
+# actually invoke jgtml's scanner when available.
 
 
 # Scan a specific timeframe
 python -m jgtagentic.jgtagenticcli fdbscan --timeframe m15
 agentic-fdbscan scan --timeframe m15 --instrument EUR/USD
 
-# Add ``--real`` to invoke the true jgtml fdbscan command.
+# Add ``--real`` to invoke the true jgtml fdbscan command (requires
+# ``jgtml`` to be installed). You can also set ``FDBSCAN_AGENT_REAL=1`` to
+# default to real mode.
 agentic-fdbscan scan --timeframe m15 --instrument EUR/USD --real
 
 # Run the full FDBScan ritual sequence
