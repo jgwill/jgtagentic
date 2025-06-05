@@ -128,3 +128,5 @@ test/*.csv
 
 cache/
 .hch/
+
+package-lock.json
