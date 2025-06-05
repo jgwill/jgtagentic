@@ -21,7 +21,7 @@ const API_KEY_STATUS = ((): { configured: boolean; message: string; usingLegacyK
   }
   return { 
     configured: false, 
-    message: "Gemini API Key not configured. Please set MIAGEM_API_KEY (recommended) or API_KEY (legacy) environment variable.",
+    message: "Gemini API Key not configured. Please set MIAGEM_API_KEY in your environment (e.g., via a .env file for local development, loaded by your dev server) or use API_KEY (legacy, often for deployments).",
     usingLegacyKey: false
   };
 })();
@@ -41,11 +41,14 @@ const checkApiKeyAndThrow = () => {
 
 const getApiKeyRelatedErrorMessage = (error: Error): string => {
     let keyDisplayName = "API Key";
-    if (API_KEY_STATUS.usingLegacyKey) {
-        keyDisplayName = "legacy API_KEY";
-    } else if (MIAGEM_API_KEY) {
-        keyDisplayName = "MIAGEM_API_KEY";
+    // Determine which key name to display based on what's configured or attempted
+    if (API_KEY_STATUS.configured) {
+        keyDisplayName = API_KEY_STATUS.usingLegacyKey ? "legacy API_KEY" : "MIAGEM_API_KEY";
+    } else {
+        // If not configured, the error is likely about the general attempt
+        keyDisplayName = "MIAGEM_API_KEY or API_KEY";
     }
+
 
     if (error.message.includes("API_KEY_INVALID") || error.message.toLowerCase().includes("api key not valid")) {
         return `The provided Gemini ${keyDisplayName} is invalid or has expired.`;
@@ -54,9 +57,9 @@ const getApiKeyRelatedErrorMessage = (error: Error): string => {
         return `Gemini API request failed due to authentication or permission issues with ${keyDisplayName}. Please check your API key and project setup.`;
     }
     if (error.message.includes("RESOURCE_EXHAUSTED") || (error as any)?.status === 429) {
-        return `Gemini API quota exceeded. Please check your usage limits or try again later. (Using ${keyDisplayName})`;
+        return `Gemini API quota exceeded. Please check your usage limits or try again later. (Attempted with ${keyDisplayName})`;
     }
-    return `Error from Gemini API (using ${keyDisplayName}): ${error.message}`;
+    return `Error from Gemini API (attempted with ${keyDisplayName}): ${error.message}`;
 };
 
 
