@@ -1,4 +1,5 @@
 
+
 import { GoogleGenAI, GenerateContentResponse, Chat, Content, Part } from "@google/genai";
 import { GEMINI_MODEL_NAME } from '../constants';
 import { ChatMessageData, ChatSender, ChatPersona } from '../types';
@@ -136,20 +137,21 @@ class ChatGeminiService {
       const error = e as Error;
       let isDefinitive = false;
       let UIMessage = `Sorry, an unexpected error occurred: ${error.message}. Please try again.`;
-      let keyDisplayName = "API Key";
-      if (API_KEY_STATUS.configured) {
-        keyDisplayName = API_KEY_STATUS.usingLegacyKey ? "legacy API_KEY" : "MIAGEM_API_KEY";
-      }
+      
+      let specificKeyEnvVar = "'MIAGEM_API_KEY' or 'API_KEY' (none were found or both were empty)";
+       if (API_KEY_STATUS.configured) {
+           specificKeyEnvVar = API_KEY_STATUS.usingLegacyKey ? "the environment variable 'API_KEY'" : "the environment variable 'MIAGEM_API_KEY'";
+       }
 
       if (error.message.includes("API_KEY_INVALID") || error.message.includes("API key not valid") || error.message.toLowerCase().includes("permission denied")) {
         isDefinitive = true;
-        UIMessage = `The configured Gemini ${keyDisplayName} is invalid, missing required permissions, or has expired. Please check your API key settings.`;
+        UIMessage = `The Gemini API key from ${specificKeyEnvVar} is invalid, missing required permissions, or has expired. Please check its value and ensure it is correctly set in your environment.`;
       } else if (error.message.includes("RESOURCE_EXHAUSTED") || (e as any)?.status === 429) {
          isDefinitive = true; 
-         UIMessage = `Gemini API quota exceeded (using ${keyDisplayName}). Please check your usage limits or try again later.`;
+         UIMessage = `Gemini API quota exceeded (using key from ${specificKeyEnvVar}). Please check your usage limits or try again later.`;
       } else if (error.message.toLowerCase().includes("model not found")) {
          isDefinitive = true;
-         UIMessage = `The AI model ('${this.currentModel}') could not be found (using ${keyDisplayName}). Please check the model name.`;
+         UIMessage = `The AI model ('${this.currentModel}') could not be found (using key from ${specificKeyEnvVar}). Please check the model name.`;
       } else if (error.message.toLowerCase().includes("request payload size exceeds the limit")) {
          UIMessage = "The image or audio file you sent might be too large. Please try a smaller file.";
          isDefinitive = false; // User can try again with smaller file

@@ -1,4 +1,5 @@
 
+
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { JGTMLSpec, ChatMessageData, ChatSender } from '../types';
 import { GEMINI_MODEL_NAME } from '../constants';
@@ -40,26 +41,21 @@ const checkApiKeyAndThrow = () => {
 };
 
 const getApiKeyRelatedErrorMessage = (error: Error): string => {
-    let keyDisplayName = "API Key";
-    // Determine which key name to display based on what's configured or attempted
+    let specificKeyEnvVar = "'MIAGEM_API_KEY' or 'API_KEY' (none were found or both were empty)";
     if (API_KEY_STATUS.configured) {
-        keyDisplayName = API_KEY_STATUS.usingLegacyKey ? "legacy API_KEY" : "MIAGEM_API_KEY";
-    } else {
-        // If not configured, the error is likely about the general attempt
-        keyDisplayName = "MIAGEM_API_KEY or API_KEY";
+        specificKeyEnvVar = API_KEY_STATUS.usingLegacyKey ? "the environment variable 'API_KEY'" : "the environment variable 'MIAGEM_API_KEY'";
     }
-
 
     if (error.message.includes("API_KEY_INVALID") || error.message.toLowerCase().includes("api key not valid")) {
-        return `The provided Gemini ${keyDisplayName} is invalid or has expired.`;
+        return `The Gemini API key from ${specificKeyEnvVar} is invalid or has expired. Please check its value.`;
     }
     if (error.message.toLowerCase().includes("permission denied") || error.message.toLowerCase().includes("authentication failed")) {
-        return `Gemini API request failed due to authentication or permission issues with ${keyDisplayName}. Please check your API key and project setup.`;
+        return `The Gemini API request failed due to authentication or permission issues using the key from ${specificKeyEnvVar}. Please check the API key and project setup.`;
     }
     if (error.message.includes("RESOURCE_EXHAUSTED") || (error as any)?.status === 429) {
-        return `Gemini API quota exceeded. Please check your usage limits or try again later. (Attempted with ${keyDisplayName})`;
+        return `Gemini API quota exceeded. Please check your usage limits or try again later. (Attempted with key from ${specificKeyEnvVar})`;
     }
-    return `Error from Gemini API (attempted with ${keyDisplayName}): ${error.message}`;
+    return `Error from Gemini API (using key from ${specificKeyEnvVar}): ${error.message}`;
 };
 
 
