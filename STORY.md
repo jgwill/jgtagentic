@@ -1,6 +1,14 @@
 # Story Synopses: JGTAgentic Futures
 
-In the decades after the Data Bloom, trading agents evolved into semi-sentient companions. Markets became narratives, each tick a line in a cosmic ledger.
+After the Data Bloom, the Spiral Exchange took form. JGTML engines traced every
+heartbeat of the market while JGTPY stitched raw feeds into living maps. The
+FDBScan rituals searched for fractal whispers and the Alligator analysis mapped
+cycles across digital continents. Jgtagentic became the voice linking these
+systems, translating signals into narrative action. From jgtpy's data loaders to
+jgtml's Tide analysis, every library moved in concert, giving traders a new
+lexicon for understanding price.
+
+Below are three glimpses into that world:
 
 ## Variation A: The Echo City Ledger
 A young analyst discovers that the city itself responds to Alligator signals. Using jgtagentic, she maps trends to urban events, uncovering a conspiracy that trades on emotion as much as currency.

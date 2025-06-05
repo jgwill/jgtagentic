@@ -51,8 +51,9 @@ python -m jgtagentic.jgtagenticcli spec path/to/spec.jgtml-spec
 
 # Invoke the unified Alligator analysis (arguments forwarded to jgtml)
 python -m jgtagentic.jgtagenticcli alligator -- -i SPX500 -t D1 -d B
-# Show the underlying jgtml help
+# Show the underlying jgtml help with `-- --help`
 python -m jgtagentic.jgtagenticcli alligator -- --help
+# If `jgtml` isn't installed the agent prints the command it would run
 
 # Add ``--real`` to invoke the true jgtml fdbscan command (requires
 # ``jgtml`` to be installed). You can also set ``FDBSCAN_AGENT_REAL=1`` to
