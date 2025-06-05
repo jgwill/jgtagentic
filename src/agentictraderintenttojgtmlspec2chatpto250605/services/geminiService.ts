@@ -1,33 +1,78 @@
 
-
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { JGTMLSpec, ChatMessageData, ChatSender } from '../types';
 import { GEMINI_MODEL_NAME } from '../constants';
 import { SUMMARIZE_TRADING_NARRATIVE_CHAT_PROMPT, TRANSLATE_NARRATIVE_TO_JGTML_PROMPT_TEMPLATE } from './promptTemplates';
 
-const API_KEY = process.env.API_KEY;
+const MIAGEM_API_KEY = process.env.MIAGEM_API_KEY;
+const LEGACY_API_KEY = process.env.API_KEY; // Old key
+const EFFECTIVE_API_KEY = MIAGEM_API_KEY || LEGACY_API_KEY;
 
-// Initialize GoogleGenAI instance.
-// The API key's availability is handled externally as per guidelines.
-// If API_KEY is undefined here, ai will be initialized with undefined,
-// but subsequent checks in functions will catch this.
-const ai = new GoogleGenAI({ apiKey: API_KEY }); 
+const API_KEY_STATUS = ((): { configured: boolean; message: string; usingLegacyKey: boolean } => {
+  if (MIAGEM_API_KEY) {
+    return { configured: true, message: "MIAGEM_API_KEY configured.", usingLegacyKey: false };
+  }
+  if (LEGACY_API_KEY) {
+    return { 
+      configured: true, 
+      message: "Using legacy API_KEY. Please update to MIAGEM_API_KEY for future compatibility.", 
+      usingLegacyKey: true 
+    };
+  }
+  return { 
+    configured: false, 
+    message: "Gemini API Key not configured. Please set MIAGEM_API_KEY (recommended) or API_KEY (legacy) environment variable.",
+    usingLegacyKey: false
+  };
+})();
+
+let ai: GoogleGenAI | null = null;
+if (API_KEY_STATUS.configured && EFFECTIVE_API_KEY) {
+  ai = new GoogleGenAI({ apiKey: EFFECTIVE_API_KEY });
+} else {
+  console.warn(`geminiService: ${API_KEY_STATUS.message}`);
+}
+
+const checkApiKeyAndThrow = () => {
+  if (!API_KEY_STATUS.configured || !ai) {
+    throw new Error(API_KEY_STATUS.message + " (geminiService)");
+  }
+};
+
+const getApiKeyRelatedErrorMessage = (error: Error): string => {
+    let keyDisplayName = "API Key";
+    if (API_KEY_STATUS.usingLegacyKey) {
+        keyDisplayName = "legacy API_KEY";
+    } else if (MIAGEM_API_KEY) {
+        keyDisplayName = "MIAGEM_API_KEY";
+    }
+
+    if (error.message.includes("API_KEY_INVALID") || error.message.toLowerCase().includes("api key not valid")) {
+        return `The provided Gemini ${keyDisplayName} is invalid or has expired.`;
+    }
+    if (error.message.toLowerCase().includes("permission denied") || error.message.toLowerCase().includes("authentication failed")) {
+        return `Gemini API request failed due to authentication or permission issues with ${keyDisplayName}. Please check your API key and project setup.`;
+    }
+    if (error.message.includes("RESOURCE_EXHAUSTED") || (error as any)?.status === 429) {
+        return `Gemini API quota exceeded. Please check your usage limits or try again later. (Using ${keyDisplayName})`;
+    }
+    return `Error from Gemini API (using ${keyDisplayName}): ${error.message}`;
+};
+
 
 export const translateNarrativeToSpec = async (narrative: string): Promise<JGTMLSpec> => {
-  if (!API_KEY || API_KEY.trim() === "") {
-    console.error("API_KEY environment variable not set or is empty.");
-    throw new Error("Gemini API Key is not configured. Please set the API_KEY environment variable.");
-  }
+  checkApiKeyAndThrow(); // Will throw if API key is not configured
 
   const fullPrompt = TRANSLATE_NARRATIVE_TO_JGTML_PROMPT_TEMPLATE.replace('{traderNarrative}', narrative);
 
   try {
-    const response: GenerateContentResponse = await ai.models.generateContent({
+    // ai is guaranteed to be non-null here due to checkApiKeyAndThrow()
+    const response: GenerateContentResponse = await ai!.models.generateContent({
       model: GEMINI_MODEL_NAME,
       contents: fullPrompt,
       config: {
         responseMimeType: "application/json",
-        temperature: 0.2, // Lower temperature for more deterministic JSON output
+        temperature: 0.2, 
       },
     });
 
@@ -53,31 +98,16 @@ export const translateNarrativeToSpec = async (narrative: string): Promise<JGTML
       throw new Error(`Failed to parse JGTMLSpec from LLM response. Invalid JSON: ${(e as Error).message}`);
     }
   } catch (error) {
-    console.error("Error calling Gemini API:", error);
-    if (error instanceof Error && error.message.includes("API_KEY_INVALID")) {
-         throw new Error("The provided Gemini API Key is invalid or has expired.");
-    }
-    if (error instanceof Error) {
-        if (error.message.toLowerCase().includes("permission denied") || error.message.toLowerCase().includes("authentication failed")) {
-            throw new Error("Gemini API request failed due to authentication or permission issues. Please check your API key and project setup.");
-        }
-        if (error.message.includes("RESOURCE_EXHAUSTED") || (error as any)?.status === 429) {
-            throw new Error("Gemini API quota exceeded. Please check your usage limits or try again later.");
-        }
-    }
-    throw new Error(`Error generating spec from LLM: ${(error as Error).message}`);
+    console.error("Error calling Gemini API for spec translation:", error);
+    throw new Error(getApiKeyRelatedErrorMessage(error as Error));
   }
 };
 
 export const summarizeChatHistoryForNarrative = async (messages: ChatMessageData[]): Promise<string> => {
-  if (!API_KEY || API_KEY.trim() === "") {
-    console.error("API_KEY environment variable not set or is empty.");
-    throw new Error("Gemini API Key is not configured. Please set the API_KEY environment variable.");
-  }
+  checkApiKeyAndThrow(); // Will throw if API key is not configured
 
-  // Format chat history into a single string
   const chatHistoryString = messages
-    .filter(msg => msg.sender === ChatSender.User || (msg.sender === ChatSender.AI && !msg.isError)) // Include user messages and non-error AI responses
+    .filter(msg => msg.sender === ChatSender.User || (msg.sender === ChatSender.AI && !msg.isError))
     .map(msg => `${msg.sender}: ${msg.text}`)
     .join('\n');
 
@@ -88,32 +118,19 @@ export const summarizeChatHistoryForNarrative = async (messages: ChatMessageData
   const prompt = SUMMARIZE_TRADING_NARRATIVE_CHAT_PROMPT.replace('{chatHistoryString}', chatHistoryString);
 
   try {
-    const response: GenerateContentResponse = await ai.models.generateContent({
+    // ai is guaranteed to be non-null here
+    const response: GenerateContentResponse = await ai!.models.generateContent({
       model: GEMINI_MODEL_NAME,
       contents: prompt,
       config: {
-        // Temperature can be higher for more creative summarization, but still controlled
         temperature: 0.5, 
       },
     });
 
-    // The prompt asks for plain text, so no JSON parsing or fence removal needed here,
-    // but we should still trim whitespace.
     return response.text.trim();
 
   } catch (error) {
     console.error("Error calling Gemini API for chat summarization:", error);
-     if (error instanceof Error && error.message.includes("API_KEY_INVALID")) {
-         throw new Error("The provided Gemini API Key is invalid or has expired.");
-    }
-    if (error instanceof Error) {
-        if (error.message.toLowerCase().includes("permission denied") || error.message.toLowerCase().includes("authentication failed")) {
-            throw new Error("Gemini API request failed due to authentication or permission issues for summarization.");
-        }
-        if (error.message.includes("RESOURCE_EXHAUSTED") || (error as any)?.status === 429) {
-            throw new Error("Gemini API quota exceeded for summarization. Please check your usage limits or try again later.");
-        }
-    }
-    throw new Error(`Error summarizing chat history: ${(error as Error).message}`);
+    throw new Error(getApiKeyRelatedErrorMessage(error as Error));
   }
 };
