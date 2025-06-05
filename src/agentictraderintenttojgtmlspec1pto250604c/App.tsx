@@ -5,6 +5,7 @@ import IntentSpecParser from './components/IntentSpecParser';
 import FlowCard from './components/FlowCard';
 import { JGTMLSpec, ParsedSpecOutput } from './types';
 import { translateNarrativeToSpec } from './services/geminiService';
+import { simulateIntentSpecParsing } from './services/parserService'; // New service
 import { ArrowDownIcon, DatabaseIcon, LayersIcon, RepeatIcon, TerminalSquareIcon } from './components/icons/LucideIcons';
 import { EXAMPLE_NARRATIVE } from './constants';
 
@@ -12,23 +13,27 @@ const App: React.FC = () => {
   const [traderNarrative, setTraderNarrative] = useState<string>(EXAMPLE_NARRATIVE);
   const [generatedSpec, setGeneratedSpec] = useState<JGTMLSpec | null>(null);
   const [parsedOutput, setParsedOutput] = useState<ParsedSpecOutput | null>(null);
+  
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [llmError, setLlmError] = useState<string | null>(null);
+  const [parserError, setParserError] = useState<string | null>(null);
   const [currentActiveSection, setCurrentActiveSection] = useState<string | null>(null);
 
 
   const handleReset = useCallback(() => {
-    setTraderNarrative(EXAMPLE_NARRATIVE); // Reset to example or ""
+    setTraderNarrative(EXAMPLE_NARRATIVE);
     setGeneratedSpec(null);
     setParsedOutput(null);
     setIsLoading(false);
-    setError(null);
+    setLlmError(null);
+    setParserError(null);
     setCurrentActiveSection(null);
   }, []);
 
   const handleNarrativeSubmit = useCallback(async (narrative: string) => {
     setIsLoading(true);
-    setError(null);
+    setLlmError(null);
+    setParserError(null);
     setGeneratedSpec(null);
     setParsedOutput(null);
     setTraderNarrative(narrative);
@@ -37,30 +42,29 @@ const App: React.FC = () => {
     try {
       const spec = await translateNarrativeToSpec(narrative);
       setGeneratedSpec(spec);
+      setLlmError(null); // Clear LLM error on success
       setCurrentActiveSection('parser');
       
-      // Simulate parsing
-      // In a real app, this would involve more complex logic
-      setParsedOutput({
-        status: 'Success',
-        message: 'JGTML spec successfully received and validated (simulation). Ready for signal processing.',
-        signalPackagePreview: {
-          strategy: spec.strategy_intent,
-          instruments: spec.instruments,
-          timeframes: spec.timeframes,
-          signalCount: spec.signals.length,
-          firstSignalName: spec.signals.length > 0 ? spec.signals[0].name : 'N/A',
-        }
-      });
-      setCurrentActiveSection(null); // Or 'done'
-    } catch (err) {
-      const errorMessage = (err as Error).message || 'An unknown error occurred.';
-      setError(errorMessage);
-      console.error("Processing error:", err);
-      setParsedOutput(null); // Clear any partial parsing attempt
-      setCurrentActiveSection(null);
+      try {
+        const parsingResult = await simulateIntentSpecParsing(spec);
+        setParsedOutput(parsingResult);
+        setParserError(null); // Clear parser error on success
+      } catch (parseErr) {
+        const parseErrorMessage = (parseErr as Error).message || 'An unknown parsing error occurred.';
+        setParserError(parseErrorMessage);
+        console.error("Parsing simulation error:", parseErr);
+        setParsedOutput(null);
+      }
+      
+    } catch (llmErr) {
+      const llmErrorMessage = (llmErr as Error).message || 'An unknown LLM error occurred.';
+      setLlmError(llmErrorMessage);
+      console.error("LLM Translation error:", llmErr);
+      setGeneratedSpec(null); // Ensure spec is cleared if LLM fails
+      setParsedOutput(null);
     } finally {
       setIsLoading(false);
+      setCurrentActiveSection(null); 
     }
   }, []);
 
@@ -69,6 +73,12 @@ const App: React.FC = () => {
       <ArrowDownIcon className="w-6 h-6 sm:w-8 sm:h-8" />
     </div>
   );
+
+  // Determine if LLM section should be visible
+  const showLlmSection = generatedSpec || (isLoading && currentActiveSection === 'llm') || llmError;
+  // Determine if Parser section should be visible
+  const showParserSection = parsedOutput || (isLoading && currentActiveSection === 'parser') || parserError || (generatedSpec && !llmError);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-50 to-slate-100 py-6 sm:py-10">
@@ -89,32 +99,32 @@ const App: React.FC = () => {
           <TraderIntentInput
             onSubmitNarrative={handleNarrativeSubmit}
             onReset={handleReset}
-            isLoading={isLoading}
+            isLoading={isLoading} //isLoading is true if either llm or parser is working
             initialNarrative={traderNarrative}
           />
           
-          {(generatedSpec || isLoading && currentActiveSection === 'llm' || error && !generatedSpec) && <ArrowSeparator />}
+          {showLlmSection && <ArrowSeparator />}
 
-          {(generatedSpec || isLoading && currentActiveSection === 'llm' || error && !generatedSpec) && (
+          {showLlmSection && (
             <LLMTranslationEngine
               spec={generatedSpec}
               isLoading={isLoading && currentActiveSection === 'llm'}
-              error={error && !generatedSpec ? error : null} 
+              error={llmError} 
             />
           )}
           
-          {(parsedOutput || isLoading && currentActiveSection === 'parser' || (error && generatedSpec)) && <ArrowSeparator />}
+          {showParserSection && <ArrowSeparator />}
 
-          {(parsedOutput || isLoading && currentActiveSection === 'parser' || (error && generatedSpec)) && (
+          {showParserSection && (
              <IntentSpecParser
-              specInput={generatedSpec}
+              specInput={generatedSpec} 
               parsedOutput={parsedOutput}
               isLoading={isLoading && currentActiveSection === 'parser'}
-              error={error && generatedSpec ? error : null} // Show parsing specific error if spec was generated
+              error={parserError}
             />
           )}
 
-          {parsedOutput && !error && (
+          {parsedOutput && !llmError && !parserError && (
             <>
               <ArrowSeparator />
               <FlowCard

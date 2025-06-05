@@ -1,15 +1,14 @@
+
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { JGTMLSpec } from '../types';
 import { GEMINI_MODEL_NAME } from '../constants';
 
 const API_KEY = process.env.API_KEY;
 
-if (!API_KEY) {
-  console.error("API_KEY environment variable not set.");
-  // Potentially throw an error or handle this in UI
-}
-
-const ai = new GoogleGenAI({ apiKey: API_KEY || "MISSING_API_KEY" }); // Provide a fallback for initialization if key is missing
+// Initialize GoogleGenAI instance.
+// The API key's availability is handled externally as per guidelines.
+// The translateNarrativeToSpec function will throw an error if API_KEY is not set.
+const ai = new GoogleGenAI({ apiKey: API_KEY }); 
 
 function constructPrompt(traderNarrative: string): string {
   return `
@@ -51,6 +50,8 @@ If the trader references different Alligator types (Regular, Big, Tide), populat
 
 export const translateNarrativeToSpec = async (narrative: string): Promise<JGTMLSpec> => {
   if (!API_KEY) {
+    // This check ensures that we don't proceed if the API key is not configured.
+    console.error("API_KEY environment variable not set.");
     throw new Error("Gemini API Key is not configured. Please set the API_KEY environment variable.");
   }
 
@@ -68,7 +69,6 @@ export const translateNarrativeToSpec = async (narrative: string): Promise<JGTML
 
     let jsonStr = response.text.trim();
     
-    // Robustly clean potential markdown fences, though responseMimeType: "application/json" should prevent this.
     const fenceRegex = /^```(?:json)?\s*\n?(.*?)\n?\s*```$/s;
     const match = jsonStr.match(fenceRegex);
     if (match && match[1]) {
@@ -77,8 +77,8 @@ export const translateNarrativeToSpec = async (narrative: string): Promise<JGTML
 
     try {
       const parsedData = JSON.parse(jsonStr) as JGTMLSpec;
-      // Basic validation (can be more thorough)
       if (!parsedData.strategy_intent || !parsedData.instruments || !parsedData.timeframes || !parsedData.signals) {
+        console.error("Parsed JSON is missing required JGTMLSpec fields. Raw LLM text:", response.text, "Attempted JSON string:", jsonStr);
         throw new Error("Parsed JSON is missing required JGTMLSpec fields.");
       }
       return parsedData;
@@ -92,6 +92,18 @@ export const translateNarrativeToSpec = async (narrative: string): Promise<JGTML
     console.error("Error calling Gemini API:", error);
     if (error instanceof Error && error.message.includes("API_KEY_INVALID")) {
          throw new Error("The provided Gemini API Key is invalid or has expired.");
+    }
+    // Check for common API errors, e.g., quota issues, model not found, etc.
+    // The GoogleGenAI library might throw specific error types or include details in error.message or error.details
+    if (error instanceof Error) {
+        // Basic check for permission denied or authentication issues that might not explicitly say "API_KEY_INVALID"
+        if (error.message.toLowerCase().includes("permission denied") || error.message.toLowerCase().includes("authentication failed")) {
+            throw new Error("Gemini API request failed due to authentication or permission issues. Please check your API key and project setup.");
+        }
+         // You might want to check for specific error codes or messages from the Gemini API
+        if (error.message.includes("RESOURCE_EXHAUSTED") || (error as any)?.status === 429) {
+            throw new Error("Gemini API quota exceeded. Please check your usage limits or try again later.");
+        }
     }
     throw new Error(`Error generating spec from LLM: ${(error as Error).message}`);
   }

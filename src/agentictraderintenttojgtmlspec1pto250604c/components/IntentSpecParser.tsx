@@ -4,10 +4,10 @@ import FlowCard from './FlowCard';
 import { FileTextIcon, LoaderIcon } from './icons/LucideIcons';
 
 interface IntentSpecParserProps {
-  specInput: JGTMLSpec | null; // The spec to be "parsed"
+  specInput: JGTMLSpec | null; 
   parsedOutput: ParsedSpecOutput | null;
-  isLoading: boolean; // This could be for a simulated parsing delay
-  error: string | null;
+  isLoading: boolean; // True when this specific component's operation is loading
+  error: string | null; // Specifically for parsing errors
 }
 
 const IntentSpecParser: React.FC<IntentSpecParserProps> = ({ specInput, parsedOutput, isLoading, error }) => {
@@ -18,19 +18,19 @@ const IntentSpecParser: React.FC<IntentSpecParserProps> = ({ specInput, parsedOu
       bgColorClass="bg-green-50"
       icon={<FileTextIcon className="w-6 h-6 text-green-600" />}
     >
-      {isLoading && specInput && (
+      {isLoading && specInput && ( // Show loading only if there's a spec input and it's its turn to load
         <div className="flex items-center justify-center p-6 text-green-700">
           <LoaderIcon className="w-8 h-8 mr-3" />
           <span>Simulating spec parsing...</span>
         </div>
       )}
-      {error && !isLoading && (
+      {error && !isLoading && ( // Display error only if not loading
          <div className="p-4 bg-red-100 border border-red-300 text-red-700 rounded-md">
           <p className="font-semibold">Parsing Error:</p>
           <p className="text-sm">{error}</p>
         </div>
       )}
-      {parsedOutput && !isLoading && !error && (
+      {parsedOutput && !isLoading && !error && ( // Display output if no error and not loading
         <div className="space-y-3">
           <div>
             <h4 className="text-md font-semibold text-gray-700">Parsing Status:</h4>
@@ -52,8 +52,11 @@ const IntentSpecParser: React.FC<IntentSpecParserProps> = ({ specInput, parsedOu
           )}
         </div>
       )}
-      {!specInput && !isLoading && !error && (
+      {!specInput && !isLoading && !error && ( // If no spec has been provided yet, and not loading/error state for this component
          <p className="text-sm text-gray-500 italic p-4 text-center">Waiting for a JGTML spec to parse...</p>
+      )}
+       {specInput && !parsedOutput && !isLoading && !error && ( // If spec is provided, but no output, not loading and no error (e.g. LLM failed, parser hasn't run)
+         <p className="text-sm text-gray-500 italic p-4 text-center">Ready to parse generated JGTML spec.</p>
       )}
     </FlowCard>
   );
