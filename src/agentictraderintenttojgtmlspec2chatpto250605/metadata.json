@@ -1,0 +1,9 @@
+{
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ],
+  "name": "AgenticTraderIntenttoJGTMLSpec2ChatPto250605",
+  "description": "",
+  "prompt": ""
+}
