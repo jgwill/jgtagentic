@@ -15,7 +15,7 @@ This document outlines the development roadmap for the Trader Intent to JGTML Sp
 
 *   **[✅] Trader Intent Input UI**:
     *   Text area for narrative input.
-    *   Example narrative button.
+    *   Example narrative button/dropdown.
     *   Reset functionality.
 *   **[✅] LLM Translation Service**:
     *   Integration with Google Gemini API (`gemini-2.5-flash-preview-04-17`).
@@ -33,6 +33,12 @@ This document outlines the development roadmap for the Trader Intent to JGTML Sp
 *   **[✅] TypeScript Implementation**: Strong typing for data structures and component props.
 *   **[✅] API Key Management**: Secure handling of API key via environment variables.
 *   **[✅] Project Documentation**: Initial `README.md`.
+*   **[✅] Trading Narrative Assistant (Chat)**:
+    *   Integrated chat interface to help users formulate their narrative.
+    *   Ability to use chat summary to populate the main narrative input.
+    *   Speech-to-text and multimodal input support (images, audio).
+*   **[✅] Copy to Clipboard**: For generated JSON outputs.
+*   **[✅] Multiple Example Narratives**: Loaded from a data file and selectable via a dropdown.
 
 ---
 
@@ -87,6 +93,8 @@ This document outlines the development roadmap for the Trader Intent to JGTML Sp
 
 *   **LLM Fine-tuning / Reinforcement Learning from Human Feedback (RLHF)**:
     *   Use data from the "Trading Echo Lattice" (especially feedback on successful/failed translations and trade outcomes) to fine-tune a custom LLM or improve prompting strategies for the Gemini API.
+*   **Conceptual Exploration: Defining JGTML as a Trading Meta-Language**:
+    *   Investigate the potential to expand JGTML beyond its current structural definition into a more comprehensive "Trading Meta Language." This involves exploring standardized vocabularies and grammars for traders to express complex strategies and analyses, aiming for a richer, more nuanced transformation from human intent to machine execution. Could JGTML become a formal bridge between qualitative insight and quantitative action?
 *   **Version Control for JGTML Specs**:
     *   Allow saving, loading, and versioning of trader narratives and their corresponding specs.
 *   **Multi-User Support & Collaboration (If applicable)**:
@@ -97,8 +105,6 @@ This document outlines the development roadmap for the Trader Intent to JGTML Sp
 *   **Advanced Analytics & Reporting**:
     *   Dashboard to visualize the performance of strategies derived from JGTML specs.
     *   Analysis of LLM translation accuracy over time.
-*   **Voice Input & Processing**:
-    *   Allow traders to dictate their narrative.
 *   **Chart Integration**:
     *   Display relevant charts alongside the narrative input or spec generation for better context.
 
