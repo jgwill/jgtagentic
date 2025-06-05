@@ -4,20 +4,21 @@ import { GoogleGenAI, GenerateContentResponse, Chat, Content, Part } from "@goog
 import { GEMINI_MODEL_NAME } from '../constants';
 import { ChatMessageData, ChatSender, ChatPersona } from '../types';
 
-const API_KEY = process.env.API_KEY;
+const API_KEY_FROM_ENV = process.env.API_KEY;
 
 class ChatGeminiService {
-  private ai: GoogleGenAI | null = null;
+  private ai: GoogleGenAI; // Changed: ai is now guaranteed to be initialized if constructor doesn't throw
   private chat: Chat | null = null;
   private currentPersona: ChatPersona | null = null;
   private currentModel: string = GEMINI_MODEL_NAME; // Default model
 
   constructor() {
-    if (!API_KEY) {
-      console.error("API_KEY environment variable not set for ChatGeminiService.");
-      return;
+    if (!API_KEY_FROM_ENV || API_KEY_FROM_ENV.trim() === "") {
+      console.error("API_KEY environment variable not set or is empty for ChatGeminiService.");
+      // Throw an error to prevent service usage in an unconfigured state.
+      throw new Error("ChatGeminiService: API Key is not configured or is empty. Please set the API_KEY environment variable.");
     }
-    this.ai = new GoogleGenAI({ apiKey: API_KEY });
+    this.ai = new GoogleGenAI({ apiKey: API_KEY_FROM_ENV });
   }
 
   private formatAppMessagesToGeminiHistory(messages: ChatMessageData[]): Content[] {
@@ -42,9 +43,7 @@ class ChatGeminiService {
   }
 
   public async initializeChat(persona: ChatPersona, history: ChatMessageData[] = []): Promise<void> {
-    if (!this.ai) {
-      throw new Error("ChatGeminiService AI not initialized. API_KEY might be missing.");
-    }
+    // ai is guaranteed to be initialized by the constructor or an error would have been thrown.
     this.currentPersona = persona;
     
     const geminiHistory = this.formatAppMessagesToGeminiHistory(history);
@@ -68,10 +67,8 @@ class ChatGeminiService {
       onError(new Error("Chat is not initialized. Please call initializeChat first."), true);
       return;
     }
-    if (!API_KEY) {
-      onError(new Error("Gemini API Key is not configured."), true);
-      return;
-    }
+    // API_KEY check is implicitly handled by the constructor ensuring `this.ai` is valid.
+    // If API_KEY_FROM_ENV was bad, constructor would have thrown.
 
     if (parts.length === 0) {
         onError(new Error("Cannot send an empty message."), false);
@@ -79,8 +76,8 @@ class ChatGeminiService {
     }
 
     try {
-      // Corrected: `message` property now holds the `parts` array.
-      const result = await this.chat.sendMessageStream({ message: { parts } });
+      // Corrected: `message` property now holds the `parts` array directly.
+      const result = await this.chat.sendMessageStream({ message: parts });
       for await (const chunk of result) {
         // text can be undefined in a chunk, e.g. if it's a non-text part or metadata
         if (chunk.text) { 

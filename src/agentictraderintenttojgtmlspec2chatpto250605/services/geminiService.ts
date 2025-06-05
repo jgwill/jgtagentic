@@ -9,11 +9,13 @@ const API_KEY = process.env.API_KEY;
 
 // Initialize GoogleGenAI instance.
 // The API key's availability is handled externally as per guidelines.
+// If API_KEY is undefined here, ai will be initialized with undefined,
+// but subsequent checks in functions will catch this.
 const ai = new GoogleGenAI({ apiKey: API_KEY }); 
 
 export const translateNarrativeToSpec = async (narrative: string): Promise<JGTMLSpec> => {
-  if (!API_KEY) {
-    console.error("API_KEY environment variable not set.");
+  if (!API_KEY || API_KEY.trim() === "") {
+    console.error("API_KEY environment variable not set or is empty.");
     throw new Error("Gemini API Key is not configured. Please set the API_KEY environment variable.");
   }
 
@@ -68,8 +70,8 @@ export const translateNarrativeToSpec = async (narrative: string): Promise<JGTML
 };
 
 export const summarizeChatHistoryForNarrative = async (messages: ChatMessageData[]): Promise<string> => {
-  if (!API_KEY) {
-    console.error("API_KEY environment variable not set.");
+  if (!API_KEY || API_KEY.trim() === "") {
+    console.error("API_KEY environment variable not set or is empty.");
     throw new Error("Gemini API Key is not configured. Please set the API_KEY environment variable.");
   }
 
