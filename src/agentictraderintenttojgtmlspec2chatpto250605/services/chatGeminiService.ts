@@ -1,3 +1,5 @@
+
+
 import { GoogleGenAI, GenerateContentResponse, Chat, Content, Part } from "@google/genai";
 import { GEMINI_MODEL_NAME } from '../constants';
 import { ChatMessageData, ChatSender, ChatPersona } from '../types';
@@ -13,8 +15,6 @@ class ChatGeminiService {
   constructor() {
     if (!API_KEY) {
       console.error("API_KEY environment variable not set for ChatGeminiService.");
-      // Throwing an error here might be too disruptive for app load.
-      // Instead, methods that use `ai` will check and throw.
       return;
     }
     this.ai = new GoogleGenAI({ apiKey: API_KEY });
@@ -22,11 +22,23 @@ class ChatGeminiService {
 
   private formatAppMessagesToGeminiHistory(messages: ChatMessageData[]): Content[] {
     return messages
-      .filter(msg => msg.sender === ChatSender.User || (msg.sender === ChatSender.AI && !msg.isError)) // Only user messages and successful AI messages for history
-      .map(appMsg => ({
-        role: appMsg.sender === ChatSender.User ? 'user' : 'model',
-        parts: [{ text: appMsg.text }] as Part[], // Assuming text-only history for now
-      }));
+      .filter(msg => msg.sender === ChatSender.User || (msg.sender === ChatSender.AI && !msg.isError))
+      .map(appMsg => {
+        const parts: Part[] = [];
+        if (appMsg.text) {
+          parts.push({ text: appMsg.text });
+        }
+        // For simplicity in history, we're still focusing on text.
+        // If full multimodal history context is needed, image/audio parts would be added here.
+        // Example for image:
+        // if (appMsg.base64ImageData && appMsg.imageMimeType) {
+        //   parts.push({ inlineData: { data: appMsg.base64ImageData, mimeType: appMsg.imageMimeType } });
+        // }
+        return {
+          role: appMsg.sender === ChatSender.User ? 'user' : 'model',
+          parts: parts.length > 0 ? parts : [{text: ''}], // Ensure parts is never empty
+        };
+      });
   }
 
   public async initializeChat(persona: ChatPersona, history: ChatMessageData[] = []): Promise<void> {
@@ -41,15 +53,13 @@ class ChatGeminiService {
       model: this.currentModel,
       config: {
         systemInstruction: this.currentPersona.systemInstruction,
-        // Add other relevant config like temperature if needed for chat
-        // temperature: 0.7, 
       },
       history: geminiHistory,
     });
   }
   
   public async sendMessageStream(
-    messageText: string,
+    parts: Part[], 
     onChunk: (chunkText: string) => void,
     onError: (error: Error, isDefinitive: boolean) => void,
     onComplete: () => void
@@ -63,10 +73,17 @@ class ChatGeminiService {
       return;
     }
 
+    if (parts.length === 0) {
+        onError(new Error("Cannot send an empty message."), false);
+        return;
+    }
+
     try {
-      const result = await this.chat.sendMessageStream({ message: messageText });
+      // Corrected: `message` property now holds the `parts` array.
+      const result = await this.chat.sendMessageStream({ message: { parts } });
       for await (const chunk of result) {
-        if (chunk.text) {
+        // text can be undefined in a chunk, e.g. if it's a non-text part or metadata
+        if (chunk.text) { 
             onChunk(chunk.text);
         }
       }
@@ -79,7 +96,7 @@ class ChatGeminiService {
         isDefinitive = true;
         onError(new Error("The Gemini API Key is invalid or missing."), isDefinitive);
       } else if (error.message.includes("RESOURCE_EXHAUSTED") || (e as any)?.status === 429) {
-         isDefinitive = true; // Quota issues are often persistent for a while
+         isDefinitive = true; 
          onError(new Error("Gemini API quota exceeded. Please check your usage limits or try again later."), isDefinitive);
       }
       else {

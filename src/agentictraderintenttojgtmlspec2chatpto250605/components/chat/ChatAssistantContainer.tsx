@@ -1,11 +1,13 @@
 
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { ChatMessageData, ChatSender, ChatPersona, ChatSettings } from '../../types';
+import { Part } from '@google/genai'; // Added import for Part
 import ChatWindow from './ChatWindow';
 import ChatInput from './ChatInput';
 import FlowCard from '../FlowCard';
 import chatGeminiService from '../../services/chatGeminiService';
-import { summarizeChatHistoryForNarrative } from '../../services/geminiService'; // Import the new service
+import { summarizeChatHistoryForNarrative } from '../../services/geminiService'; 
 import { saveChatMessages, loadChatMessages, saveChatSettings, loadChatSettings } from '../../services/chatLocalStorageService';
 import { MessageCircleIcon, Settings2Icon, Trash2Icon, RefreshCwIcon, Volume2Icon, SquareIcon, UserIcon, FilePenLineIcon, LoaderIcon } from '../icons/LucideIcons'; 
 
@@ -15,6 +17,7 @@ const ASSISTANT_PERSONA: ChatPersona = {
   avatar: <MessageCircleIcon className="w-5 h-5" />,
   systemInstruction: `You are a friendly and helpful AI assistant for traders. 
 Your primary goal is to help the user formulate a clear and concise trading narrative that can be used as input for a JGTML (Jean-Guillaume's Trading Machine-Learning) specification.
+You can see images and hear audio if the user provides them, but focus your analysis and responses on the textual parts of the conversation to help craft the narrative. You can acknowledge the presence of images/audio if relevant.
 Focus on understanding the user's market observations, their analysis of indicators, chart patterns, and their overall trading strategy ideas.
 Help them articulate these thoughts clearly. You can ask clarifying questions.
 Do NOT provide financial advice, predict market movements, or suggest specific trades.
@@ -31,11 +34,10 @@ You: "Great. So, to summarize your narrative so far for a potential JGTML spec: 
 Be concise in your responses unless asked for detail.`
 };
 
-// Helper to convert File/Blob to Base64
 const toBase64 = (file: File | Blob): Promise<string> => new Promise((resolve, reject) => {
   const reader = new FileReader();
   reader.readAsDataURL(file);
-  reader.onload = () => resolve((reader.result as string).split(',')[1]); // Get only base64 part
+  reader.onload = () => resolve((reader.result as string).split(',')[1]); 
   reader.onerror = error => reject(error);
 });
 
@@ -45,8 +47,8 @@ interface ChatAssistantContainerProps {
 
 const ChatAssistantContainer: React.FC<ChatAssistantContainerProps> = ({ onUpdateNarrative }) => {
   const [messages, setMessages] = useState<ChatMessageData[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false); // For regular chat messages
-  const [isSummarizingNarrative, setIsSummarizingNarrative] = useState<boolean>(false); // For summary generation
+  const [isLoading, setIsLoading] = useState<boolean>(false); 
+  const [isSummarizingNarrative, setIsSummarizingNarrative] = useState<boolean>(false); 
   const [chatError, setChatError] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState<boolean>(false);
   const [showSettings, setShowSettings] = useState<boolean>(false);
@@ -130,21 +132,35 @@ const ChatAssistantContainer: React.FC<ChatAssistantContainerProps> = ({ onUpdat
       audioMimeType: data.audioMimeType,
     };
 
-    if (data.file) {
+    const parts: Part[] = [];
+
+    if (data.text.trim()) {
+      parts.push({ text: data.text.trim() });
+    }
+
+    if (data.file && data.file.type.startsWith('image/')) {
+      const base64 = await toBase64(data.file);
       userMessage.imagePreviewUrl = URL.createObjectURL(data.file);
-      userMessage.base64ImageData = await toBase64(data.file);
+      userMessage.base64ImageData = base64;
+      userMessage.imageMimeType = data.file.type; // Ensure mimeType is set from file
+      parts.push({ inlineData: { data: base64, mimeType: data.file.type } });
     } else if (data.base64ImageData && data.imageMimeType) {
       userMessage.base64ImageData = data.base64ImageData;
       userMessage.imagePreviewUrl = `data:${data.imageMimeType};base64,${data.base64ImageData}`;
+      parts.push({ inlineData: { data: data.base64ImageData, mimeType: data.imageMimeType } });
     }
 
     if (data.recordedAudio && data.audioMimeType) {
+      const base64 = await toBase64(data.recordedAudio);
       userMessage.audioDataUrl = URL.createObjectURL(data.recordedAudio);
+      // userMessage.base64AudioData = base64; // If needed for persistence
+      parts.push({ inlineData: { data: base64, mimeType: data.audioMimeType } });
     }
     
     setMessages(prevMessages => [...prevMessages, userMessage]);
     
-    if (data.text.trim()) {
+    // Ensure parts is not empty before sending to AI
+    if (parts.length > 0) {
         setIsLoading(true);
         setChatError(null);
 
@@ -161,7 +177,7 @@ const ChatAssistantContainer: React.FC<ChatAssistantContainerProps> = ({ onUpdat
         setMessages(prevMessages => [...prevMessages, aiPlaceholderMessage]);
 
         await chatGeminiService.sendMessageStream(
-          data.text,
+          parts, // Send constructed parts
           (chunkText) => { 
             fullAiResponse += chunkText;
             setMessages(prevMessages => 
@@ -184,8 +200,14 @@ const ChatAssistantContainer: React.FC<ChatAssistantContainerProps> = ({ onUpdat
           },
           () => { 
             setIsLoading(false);
+            // Optionally auto-play TTS here if chatSettings.autoPlayTTS is true
           }
         );
+    } else if (!data.text.trim()) {
+      // Handle cases where only non-text attachments were "sent" but parts array remained empty 
+      // (e.g., if audio conversion failed silently or was not added to parts)
+      // For now, this case is implicitly handled by not calling the API if parts.length === 0.
+      // One might add a user-facing message like "Could not process attachment."
     }
   };
 
@@ -219,8 +241,6 @@ const ChatAssistantContainer: React.FC<ChatAssistantContainerProps> = ({ onUpdat
     try {
       const narrativeSummary = await summarizeChatHistoryForNarrative(messages);
       onUpdateNarrative(narrativeSummary);
-      // Optional: Add a toast notification for success
-      // alert("Narrative updated from assistant's summary.");
     } catch (error) {
       console.error("Error summarizing narrative:", error);
       const errorMessage = (error as Error).message || "Failed to summarize narrative.";
@@ -299,7 +319,7 @@ const ChatAssistantContainer: React.FC<ChatAssistantContainerProps> = ({ onUpdat
       <div className="flex flex-col h-full">
         <ChatWindow 
             messages={messages} 
-            isLoading={isLoading && !isSummarizingNarrative} // Only show main typing indicator if not summarizing
+            isLoading={isLoading && !isSummarizingNarrative} 
             personaName={ASSISTANT_PERSONA.name}
             personaAvatar={ASSISTANT_PERSONA.avatar}
         />
