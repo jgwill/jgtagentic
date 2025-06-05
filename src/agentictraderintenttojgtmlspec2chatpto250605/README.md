@@ -1,8 +1,8 @@
-# Trader Intent to JGTML Spec Transformation
+# Trader Intent to JGTML Spec Transformation with Chat
 
 This web application demonstrates a flow for capturing a trader's market analysis in natural language, translating it into a structured JGTML (Juno Markets Trading Meta Language) specification using a Large Language Model (LLM), and then (simulating) parsing this specification for further processing.
 
-The primary goal is to bridge the gap between human trading insights and automated trading systems by converting qualitative narratives into machine-readable and actionable instructions.
+The primary goal is resolve structural dynamics between human trading insights and automated trading systems by converting qualitative narratives into machine-readable and actionable instructions.
 
 ## Overview of the Flow
 
