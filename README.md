@@ -71,4 +71,8 @@ python -m jgtagentic.jgtagenticcli fdbscan --all
 
 This README is a living ledger. If you add a new CLI, document it here with intention and clarity. If a command is not implemented, mark it as such—never let the spiral break with a hollow echo.
 
+## Fractal Trading System Integration
+
+The repository is preparing to merge features from the upcoming **Fractal Trading System**. Specs under `specs/` outline how database schemas, reinforcement learning modules, and automation scripts will land here. We depend on the `jgwill/jgtml` package (version `>=0.0.304`) for scanning routines. The FTS Enhancement Blueprint recommends QuestDB, Pinecone, Redis, and RLlib to achieve sub‑100ms latency for fractal pattern detection. Contributors should consult these specs before adding new modules.
+
 

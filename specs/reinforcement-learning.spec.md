@@ -16,7 +16,8 @@ Outlines how reinforcement learning components from the FTS repository should be
 
 2. **Dependencies**
    - Expect frameworks such as `torch` or `tensorflow`; list them under optional extras in `pyproject.toml`.
-   - Include environment configuration samples for GPU usage.
+   - Use **RLlib** with the PPO algorithm as the primary training backend.
+   - Include environment configuration samples for GPU usage and note optional integration of **EDDM** for drift detection.
 
 3. **Testing**
    - Add unit tests in `tests/ftsrl/` ensuring reward logic and training loops run in dry mode.
@@ -25,4 +26,5 @@ Outlines how reinforcement learning components from the FTS repository should be
 4. **Collaboration Notes**
    - Align RL state representations with the database schema from `src/ftsds/data/export-FTSKnower23/FTS_Today_231114e_Use_Cases___Leveraging.md`.
    - Document training workflows within Jupyter Book with code snippets.
+   - Consider logging performance metrics to QuestDB for long-term trend analysis.
 
