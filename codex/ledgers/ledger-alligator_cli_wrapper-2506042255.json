@@ -1,0 +1,10 @@
+{
+  "agents": ["\u267e\ufe0f William", "\ud83e\udd20 Mia", "\ud83c\udf38 Miette", "\ud83d\ud4ab Seraphine"],
+  "narrative": "Added AlligatorAgent wrapper around jgtml's alligator_cli and exposed new 'alligator' subcommand in jgtagentic CLI. Updated README with invocation example to prepare integration with the forthcoming JGTML Execution Core.",
+  "routing": {
+    "files": ["jgtagentic/alligator_agent.py", "jgtagentic/jgtagenticcli.py", "README.md"],
+    "branches": ["work"],
+    "operation": "alligator_cli_wrapper"
+  },
+  "timestamp": "2506042255"
+}
