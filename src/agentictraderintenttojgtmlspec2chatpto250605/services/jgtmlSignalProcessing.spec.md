@@ -1,8 +1,9 @@
-# JGTML Signal Processing Service Specification
+
+# JGTML Execution Core Service Specification
 
 ## 1. Purpose
 
-The JGTML Signal Processing service is responsible for taking a validated JGTML Specification (`JGTMLSpec`) and performing detailed financial indicator calculations, applying trading logic, and generating concrete trading signals. It acts as the bridge between the abstract, trader-defined specification and actionable intelligence that can be used for generating trading scripts or alerts. This component embodies the core analytical engine that interprets the JGTML spec against market data.
+The JGTML Execution Core service is responsible for taking a validated JGTML Specification (`JGTMLSpec`) and performing detailed financial indicator calculations, applying trading logic, and generating concrete trading signals. It acts as the bridge between the abstract, trader-defined specification and actionable intelligence that can be used for generating trading campaigns or alerts. This component embodies the core analytical engine that interprets the JGTML spec against market data, runs the spec, validates signals, and makes decisions.
 
 ## 2. Inputs
 
@@ -13,16 +14,17 @@ The JGTML Signal Processing service is responsible for taking a validated JGTML 
     *   Historical and potentially real-time price data (OHLCV - Open, High, Low, Close, Volume) for the instruments and timeframes specified in the `JGTMLSpec`.
     *   This data is sourced externally (e.g., from a market data provider, exchange API, or historical database). The service needs a configured way to access this data.
 *   **Configuration (Potentially)**:
-    *   Indicator parameters if not fully specified within the `JGTMLSpec` or if defaults are needed.
+    *   Indicator parameters if not fully specified within the `JGTMLSpec` or if defaults are needed (e.g., for AO, Alligator).
     *   References to specific calculation libraries or modules (e.g., paths or identifiers for `JGTIDS.py`, `JGTCDS.py`, `TideAlligatorAnalysis`).
 
 ## 3. Processing Logic (High-Level)
 
-1.  **Initialization**:
+1.  **Initialization (`run_spec()` executor start)**:
     *   Load the validated `JGTMLSpec`.
     *   Establish connections to market data sources.
+    *   Initialize indicator loaders (e.g., for Awesome Oscillator, Alligator).
 
-2.  **Iterate Through Signals**:
+2.  **Iterate Through Signals (Signal Validator Engine)**:
     *   For each `signal` object within the `JGTMLSpec.signals` array:
         *   **Data Retrieval**: Fetch the necessary market data for the signal's specified `instruments` and `timeframes`.
         *   **Component Processing**: For each entry in the `jgtml_components` array of the current signal:
@@ -35,27 +37,35 @@ The JGTML Signal Processing service is responsible for taking a validated JGTML 
             *   Apply any implicit or explicit logic (e.g., if all components must be true for the signal to be active).
             *   Determine if the overall conditions for the trading signal (as described by its `name` and `description`) are met.
             *   This may involve comparing calculated values against thresholds, identifying specific sequences, or matching complex conditions.
-        *   **Output Generation (Per Signal)**: If the signal conditions are met, generate a structured output detailing the active signal, including target price levels, direction (buy/sell), confidence, etc.
+        *   **Output Generation (Per Signal)**: If the signal conditions are met, generate a structured output detailing the active signal.
 
 3.  **Signal Ordering & Prioritization (Optional)**:
     *   If multiple signals become active, apply logic from `SignalOrderingHelper` (if defined) to rank or prioritize them.
 
-4.  **Chaos Data File Generation (`JGTCDS.py`)**:
+4.  **Chaos Data File Generation (`JGTCDS.py`) (Optional)**:
     *   If specified or implied by the `JGTMLSpec` or its components, generate relevant Chaos Data files based on the analyses.
 
-5.  **Collate Results**:
-    *   Compile all active signals and their associated data into a "Processed Signal Package."
+5.  **Decision Node (ENTER / WAIT / EXIT)**:
+    *   Based on the validated and potentially prioritized active signals, the core makes a decision:
+        *   `ENTER`: Conditions are met for initiating a trade.
+        *   `WAIT`: Conditions are not yet met, or further confirmation is needed.
+        *   `EXIT`: Conditions are met for closing an existing position (if managing state).
+    *   This decision is a key part of the "Processed Signal Package."
+
+6.  **Collate Results**:
+    *   Compile all active signals, their associated data, and the decision node output into a "Processed Signal Package."
 
 ## 4. Outputs
 
 *   **Processed Signal Package**: A structured data object (e.g., JSON) containing:
     *   A reference to the original `JGTMLSpec` (or its key identifiers).
     *   Timestamp of processing.
-    *   **Active Signals**: An array of objects, where each object represents a successfully triggered signal from the input spec. Each active signal object should include:
+    *   **Decision**: The output from the decision node (e.g., "ENTER", "WAIT", "EXIT").
+    *   **Active Signals**: An array of objects, where each object represents a successfully triggered and validated signal. Each active signal object should include:
         *   `signal_name`: (from `JGTMLSignal.name`)
         *   `instrument`: e.g., "EUR/USD"
         *   `timeframe`: e.g., "H4"
-        *   `action`: e.g., "BUY", "SELL", "MONITOR"
+        *   `action_type`: (derived from signal, e.g., "BUY_SETUP", "SELL_TRIGGER")
         *   `entry_price_target` (Optional): Suggested entry price.
         *   `stop_loss_target` (Optional): Suggested stop-loss price.
         *   `take_profit_target` (Optional): Suggested take-profit price.
@@ -64,21 +74,17 @@ The JGTML Signal Processing service is responsible for taking a validated JGTML 
     *   **Calculation Details (Optional, for debugging/transparency)**: Intermediate indicator values or states.
     *   **Generated Files (Optional)**: Paths or references to any generated files (e.g., `JGTCDS.py` outputs).
     *   **Processing Status**:
-        *   `status`: "Success", "Partial Success" (e.g., some signals processed, others failed), "Failure".
+        *   `status`: "Success", "Partial Success", "Failure".
         *   `message`: Details on the outcome, including any errors encountered for specific signals or components.
 
 ## 5. Key Considerations & Interactions
 
-*   **Backend Service**: This component is envisioned as a backend service, likely implemented in Python due to the mention of `.py` files.
-*   **Market Data Dependency**: Robust access to accurate and timely market data is critical. The service needs strategies for handling missing data or data errors.
-*   **Modularity**: The calculation logic for different JGTML components (`JGTIDS.py`, `TideAlligatorAnalysis`, etc.) should be modular and extensible to support new types of analysis.
-*   **Error Handling**: Comprehensive error handling is needed for issues like:
-    *   Inability to fetch market data.
-    *   Errors during indicator calculation.
-    *   Ambiguous or unsupported `jgtml_components`.
-*   **Performance**: For strategies involving multiple instruments, timeframes, or complex calculations, performance will be a consideration.
-*   **Configuration**: How specific calculation parameters (e.g., periods for moving averages, levels for RSI) are managed – whether they are part of the `JGTMLSpec` or configured within this service – needs clear definition.
-*   **State Management**: This service is generally stateless in terms of long-term memory of past signals (that's for the Trading Echo Lattice), but it processes one `JGTMLSpec` at a time.
-*   **Upstream Dependency**: Relies on a validated `JGTMLSpec` from a component like `IntentSpecParser`.
-*   **Downstream Consumer**: The "Processed Signal Package" is the primary input for the `EntryScriptGen` service.
-*   **Logging**: Detailed logging of processing steps, decisions, and errors is essential for debugging and audit trails.
+*   **Backend Service**: This component is envisioned as a backend service, likely implemented in Python.
+*   **Market Data Dependency**: Robust access to accurate and timely market data is critical.
+*   **Modularity**: The calculation logic for different JGTML components should be modular.
+*   **Error Handling**: Comprehensive error handling for data fetching, calculations, etc.
+*   **Performance**: Important for complex strategies.
+*   **State Management**: Generally stateless for a single spec processing, but might interact with a larger state if managing open positions for EXIT decisions.
+*   **Upstream Dependency**: Relies on a validated `JGTMLSpec` from `IntentSpecParser`.
+*   **Downstream Consumer**: The "Processed Signal Package" is the primary input for the `CampaignLauncher` service.
+*   **Logging**: Detailed logging is essential.

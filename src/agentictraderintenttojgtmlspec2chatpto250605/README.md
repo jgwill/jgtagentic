@@ -1,3 +1,4 @@
+
 # Trader Intent to JGTML Spec Transformation
 
 This web application demonstrates a flow for capturing a trader's market analysis in natural language, translating it into a structured JGTML (Jean-Guillaume's Trading Machine-Learning) specification using a Large Language Model (LLM), and then (simulating) parsing this specification for further processing.
@@ -9,12 +10,12 @@ The primary goal is to bridge the gap between human trading insights and automat
 The application visualizes the following conceptual steps:
 
 1.  **🔁 Echo Spiral Flow**: The overarching concept representing the continuous loop from idea to execution and feedback.
-2.  **🎤 Trader Intent**: The user inputs their trading analysis and strategy in natural language.
-3.  **🧠 LLM Translation Engine**: The narrative is sent to the Google Gemini API, which translates it into a structured JSON format (`.jgtml-spec`).
-4.  **📜 IntentSpecParser**: The generated JGTML spec is then (currently simulated) parsed to validate its structure and prepare it for signal processing.
-5.  **🧬 JGTML Signal Processing (Conceptual)**: This step, envisioned to run on a backend (e.g., Python using the JGTML library), would involve detailed indicator calculations and signal generation based on the parsed spec.
-6.  **📜 EntryScriptGen (Conceptual)**: Runnable trading scripts (e.g., bash, Python) would be generated from the processed signals.
-7.  **🗃️ Trading Echo Lattice (Conceptual)**: Trade outcomes and feedback would be recorded, creating a memory crystal to refine future strategies and LLM prompts.
+2.  **🎤 Trader Intent**: The user inputs their trading analysis and strategy in natural language. Natural language: market structure, waves, levels.
+3.  **🧠 LLM Translation Engine**: The narrative is sent to the Google Gemini API, which translates it into a structured JSON format (`.jgtml-spec`). Parses narrative → `.jgtml-spec` using pattern rules.
+4.  **🟩 IntentSpecParser (Interpreter)**: The generated JGTML spec is then (currently simulated) parsed to validate its structure and prepare it for signal processing. Reads `.jgtml-spec` → constructs signal package.
+5.  **🟦 JGTML Execution Core (Conceptual)**: This step, envisioned to run on a backend (e.g., Python using the JGTML library), would involve core logic to interpret and execute strategy commands from the spec. It includes a `run_spec()` executor, indicator loaders, a signal validator engine, and a decision node (ENTER/WAIT/EXIT).
+6.  **📦 CampaignLauncher (Conceptual)**: Materializes validated signals from the Execution Core into an executable campaign script or API action.
+7.  **🟫 Echo Lattice (Memory Crystallization) (Conceptual)**: Trade outcomes and feedback would be recorded, creating a memory crystal to refine future strategies and LLM prompts. Records outcome + feedback to memory crystal.
 
 ## JGTML: Towards a Trading Meta-Language?
 
@@ -55,7 +56,7 @@ Exploring this concept, a "Trading Meta Language" might involve standardizing vo
 3.  **`geminiService.ts`**: Handles communication with the Google Gemini API. It constructs a detailed prompt including the JGTMLSpec TypeScript interface to guide the LLM in generating the correct JSON structure. It also includes logic to clean up the LLM response.
 4.  **`LLMTranslationEngine.tsx`**: Displays the JGTML spec received from the Gemini API or any errors encountered during translation.
 5.  **`parserService.ts`**: Simulates the parsing of the JGTML spec. In a real-world scenario, this would involve more complex validation and transformation logic, likely on a backend.
-6.  **`IntentSpecParser.tsx`**: Displays the results from the `parserService` or any parsing errors.
+6.  **`IntentSpecParser.tsx`**: Displays the results from the `parserService` or any parsing errors. This component is nested within a `FlowCard` in `App.tsx` which labels it "IntentSpecParser (Interpreter)".
 7.  **`FlowCard.tsx`**: A reusable UI component for displaying each step in the workflow.
 8.  **`types.ts`**: Defines TypeScript interfaces for `JGTMLSpec`, `TraderInput`, `ParsedSpecOutput`, etc.
 9.  **`constants.ts`**: Stores global constants like the Gemini model name.
@@ -108,14 +109,18 @@ Exploring this concept, a "Trading Meta Language" might involve standardizing vo
 │   ├── parserService.ts
 │   ├── chatGeminiService.ts
 │   ├── chatLocalStorageService.ts
-│   └── promptTemplates.ts
+│   ├── promptTemplates.ts
+│   ├── jgtmlExecutionCore.spec.md    # (Previously jgtmlSignalProcessing.spec.md)
+│   ├── campaignLauncher.spec.md      # (Previously entryScriptGen.spec.md)
+│   └── echoLattice.spec.md           # (Previously tradingEchoLattice.spec.md)
 ├── hooks/               # Custom React hooks
 │   ├── useChatSpeechRecognition.ts
 │   └── useChatSpeechSynthesis.ts
 ├── data/                # Static data
 │   └── exampleNarratives.ts
-└── specs.miagemchat/    # Specification documents (internal dev use)
-    └── ...
+├── specs.miagemchat/    # Specification documents (internal dev use for chat UI)
+│   └── ...
+└── FLOW.md              # Detailed flow documentation
 ```
 
 This project serves as a prototype and foundation for building more sophisticated tools for agentic trading and strategy automation based on the JGTML (Jean-Guillaume's Trading Machine-Learning) Python library.

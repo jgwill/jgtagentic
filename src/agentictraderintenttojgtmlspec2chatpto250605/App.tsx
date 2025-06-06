@@ -7,7 +7,7 @@ import FlowCard from './components/FlowCard';
 import { JGTMLSpec, ParsedSpecOutput } from './types';
 import { translateNarrativeToSpec } from './services/geminiService';
 import { simulateIntentSpecParsing } from './services/parserService'; // New service
-import { ArrowDownIcon, DatabaseIcon, LayersIcon, RepeatIcon, TerminalSquareIcon } from './components/icons/LucideIcons';
+import { ArrowDownIcon, DatabaseIcon, LayersIcon, RepeatIcon, TerminalSquareIcon, FileTextIcon } from './components/icons/LucideIcons';
 import { EXAMPLE_NARRATIVES } from './data/exampleNarratives'; // Updated import
 import ChatAssistantContainer from './components/chat/ChatAssistantContainer';
 
@@ -163,37 +163,45 @@ const App: React.FC = () => {
           
           {showParserSection && <ArrowSeparator />}
 
+          {/* Renamed IntentSpecParser card based on user's provided example */}
           {showParserSection && (
-             <IntentSpecParser
-              specInput={generatedSpec} 
-              parsedOutput={parsedOutput}
-              isLoading={isLoading && currentActiveSection === 'parser'}
-              error={parserError}
-            />
+             <FlowCard
+                title="🟩 IntentSpecParser (Interpreter)"
+                description="Reads .jgtml-spec → constructs signal package"
+                bgColorClass="bg-green-50"
+                icon={<FileTextIcon className="w-6 h-6 text-green-600" />}
+              >
+                <IntentSpecParser
+                  specInput={generatedSpec} 
+                  parsedOutput={parsedOutput}
+                  isLoading={isLoading && currentActiveSection === 'parser'}
+                  error={parserError}
+                />
+              </FlowCard>
           )}
 
           {parsedOutput && !llmError && !parserError && (
             <>
               <ArrowSeparator />
               <FlowCard
-                title="🧬 JGTML Signal Processing"
-                description="Core logic for indicator calculation and signal generation (Python backend)."
+                title="🟦 JGTML Execution Core"
+                description="Core logic to interpret and execute strategy commands from spec"
                 bgColorClass="bg-indigo-50 border-indigo-200"
                 icon={<LayersIcon className="w-6 h-6 text-indigo-600" />}
               >
-                <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-                  <li><code>JGTIDS.py</code>: Raw indicator calculations</li>
-                  <li><code>JGTCDS.py</code>: Chaos Data file generation</li>
-                  <li><code>TideAlligatorAnalysis</code>: Alligator signal mapping</li>
-                  <li><code>SignalOrderingHelper</code>, <code>jtc.py</code>: Supporting utilities</li>
-                </ul>
-                <p className="mt-3 text-xs text-gray-500 italic">This step is typically executed on a backend server or local Python environment.</p>
+                <div className="pl-4 mt-2 space-y-1 text-sm text-gray-700">
+                    <div>• run_spec() executor</div>
+                    <div>• Indicator loader (AO, Alligator)</div>
+                    <div>• Signal validator engine</div>
+                    <div>• Decision node: ENTER / WAIT / EXIT</div>
+                </div>
+                <p className="mt-3 text-xs text-gray-500 italic">This step is typically executed on a backend server or local Python environment using the JGTML library.</p>
               </FlowCard>
 
               <ArrowSeparator />
               <FlowCard
-                title="📜 EntryScriptGen"
-                description="Generates runnable bash/python script from processed signals."
+                title="📦 CampaignLauncher"
+                description="Materializes validated signal into an executable campaign script or API action"
                 bgColorClass="bg-pink-50 border-pink-200"
                 icon={<TerminalSquareIcon className="w-6 h-6 text-pink-600" />}
               >
@@ -205,8 +213,8 @@ const App: React.FC = () => {
 
               <ArrowSeparator />
               <FlowCard
-                title="🗃️ Trading Echo Lattice"
-                description="Records trade outcome and feedback to a persistent memory crystal."
+                title="🗃️ Trading Echo Lattice (Memory Crystallization)"
+                description="Records outcome + feedback to memory crystal"
                 bgColorClass="bg-gray-100 border-gray-200"
                 icon={<DatabaseIcon className="w-6 h-6 text-gray-600" />}
               >

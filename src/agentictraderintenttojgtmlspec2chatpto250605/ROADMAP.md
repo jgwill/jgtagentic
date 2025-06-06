@@ -1,3 +1,4 @@
+
 # Project Roadmap: Trader Intent to JGTML Spec
 
 This document outlines the development roadmap for the Trader Intent to JGTML Spec application.
@@ -23,7 +24,7 @@ This document outlines the development roadmap for the Trader Intent to JGTML Sp
     *   Basic response cleaning (removing markdown fences).
 *   **[✅] JGTML Spec Display**:
     *   Formatted JSON display of the LLM-generated spec.
-*   **[✅] Simulated IntentSpecParser**:
+*   **[✅] Simulated IntentSpecParser (Interpreter)**:
     *   Simulate parsing logic with success/error states.
     *   Display simulated parsed output/preview.
 *   **[✅] UI/UX Shell**:
@@ -32,7 +33,7 @@ This document outlines the development roadmap for the Trader Intent to JGTML Sp
     *   Loading states and basic error messaging for each step.
 *   **[✅] TypeScript Implementation**: Strong typing for data structures and component props.
 *   **[✅] API Key Management**: Secure handling of API key via environment variables.
-*   **[✅] Project Documentation**: Initial `README.md`.
+*   **[✅] Project Documentation**: Initial `README.md` & `FLOW.md`.
 *   **[✅] Trading Narrative Assistant (Chat)**:
     *   Integrated chat interface to help users formulate their narrative.
     *   Ability to use chat summary to populate the main narrative input.
@@ -69,21 +70,21 @@ This document outlines the development roadmap for the Trader Intent to JGTML Sp
 
 ## Phase 3: Backend Integration & True Automation (Conceptual - Requires Python/Server-side)
 
-*   **Actual IntentSpecParser Implementation**:
+*   **Actual IntentSpecParser (Interpreter) Implementation**:
     *   Develop a Python (or other backend) service that rigorously validates and parses the JGTML spec according to defined rules.
     *   API endpoint for the frontend to send the spec and receive detailed parsing results.
-*   **JGTML Signal Processing Engine**:
-    *   Implement the Python modules (`JGTIDS.py`, `JGTCDS.py`, `TideAlligatorAnalysis`, etc.) as described.
+*   **JGTML Execution Core**:
+    *   Implement the Python modules (e.g., `run_spec()` executor, indicator loaders, signal validator, decision node) as described.
     *   Develop a system to execute these modules based on the parsed spec.
-*   **EntryScriptGen Service**:
-    *   Create a service that takes the processed signal package and generates executable trading scripts (e.g., for a specific broker API or trading platform).
-*   **Database Integration (Trading Echo Lattice)**:
+*   **CampaignLauncher Service**:
+    *   Create a service that takes the processed signal package and generates executable trading campaign scripts or API actions.
+*   **Database Integration (Echo Lattice)**:
     *   Design and implement a database schema to store:
         *   Trader narratives.
         *   Generated JGTML specs.
         *   Parsing results.
-        *   Signal processing outcomes.
-        *   Trade execution details and results.
+        *   Signal processing outcomes (from Execution Core).
+        *   Campaign execution details and results.
         *   User feedback on strategy performance.
     *   API endpoints for logging and retrieving this data.
 
@@ -92,7 +93,7 @@ This document outlines the development roadmap for the Trader Intent to JGTML Sp
 ## Phase 4: Advanced Features & Ecosystem (Long-term Vision)
 
 *   **LLM Fine-tuning / Reinforcement Learning from Human Feedback (RLHF)**:
-    *   Use data from the "Trading Echo Lattice" (especially feedback on successful/failed translations and trade outcomes) to fine-tune a custom LLM or improve prompting strategies for the Gemini API.
+    *   Use data from the "Echo Lattice" (especially feedback on successful/failed translations and trade outcomes) to fine-tune a custom LLM or improve prompting strategies for the Gemini API.
 *   **Conceptual Exploration: Defining JGTML as a Trading Meta-Language**:
     *   Investigate the potential to expand JGTML beyond its current structural definition into a more comprehensive "Trading Meta Language." This involves exploring standardized vocabularies and grammars for traders to express complex strategies and analyses, aiming for a richer, more nuanced transformation from human intent to machine execution. Could JGTML become a formal bridge between qualitative insight and quantitative action?
 *   **Version Control for JGTML Specs**:
@@ -101,7 +102,7 @@ This document outlines the development roadmap for the Trader Intent to JGTML Sp
     *   User authentication and authorization.
     *   Shared repositories of strategies or specs.
 *   **Direct Broker/Exchange Integration**:
-    *   Securely connect to trading platforms to execute generated scripts.
+    *   Securely connect to trading platforms to execute generated scripts/campaigns.
 *   **Advanced Analytics & Reporting**:
     *   Dashboard to visualize the performance of strategies derived from JGTML specs.
     *   Analysis of LLM translation accuracy over time.
