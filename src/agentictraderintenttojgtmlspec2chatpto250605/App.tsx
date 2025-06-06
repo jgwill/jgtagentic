@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import TraderIntentInput from './components/TraderIntentInput';
 import LLMTranslationEngine from './components/LLMTranslationEngine';
 import IntentSpecParser from './components/IntentSpecParser';
@@ -22,6 +22,9 @@ const App: React.FC = () => {
   const [parserError, setParserError] = useState<string | null>(null);
   const [currentActiveSection, setCurrentActiveSection] = useState<string | null>(null);
   const [isChatAssistantVisible, setIsChatAssistantVisible] = useState<boolean>(false);
+  const [shouldScrollToInput, setShouldScrollToInput] = useState<boolean>(false);
+
+  const traderIntentInputRef = useRef<HTMLDivElement>(null);
 
 
   const handleReset = useCallback(() => {
@@ -33,6 +36,7 @@ const App: React.FC = () => {
     setParserError(null);
     setCurrentActiveSection(null);
     setIsChatAssistantVisible(false); 
+    setShouldScrollToInput(false);
   }, [defaultNarrative]);
 
   const handleNarrativeSubmit = useCallback(async (narrative: string) => {
@@ -79,7 +83,19 @@ const App: React.FC = () => {
 
   const handleUpdateNarrativeFromAssistant = useCallback((newNarrative: string) => {
     setTraderNarrative(newNarrative);
+    setIsChatAssistantVisible(false); // Close assistant after using summary
+    setShouldScrollToInput(true); // Signal to scroll
   }, []);
+
+  useEffect(() => {
+    if (shouldScrollToInput && !isChatAssistantVisible) {
+      // Timeout ensures the layout has adjusted after chat assistant closes
+      setTimeout(() => {
+        traderIntentInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setShouldScrollToInput(false); // Reset flag
+      }, 100); // Adjust timeout if needed, allows CSS transitions to start
+    }
+  }, [shouldScrollToInput, isChatAssistantVisible]);
 
 
   const ArrowSeparator: React.FC = () => (
@@ -107,23 +123,33 @@ const App: React.FC = () => {
             bgColorClass="bg-yellow-50 border-yellow-200"
             icon={<RepeatIcon className="w-6 h-6 text-yellow-600" />}
           />
-
-          <TraderIntentInput
-            onSubmitNarrative={handleNarrativeSubmit}
-            onReset={handleReset}
-            isLoading={isLoading && (currentActiveSection === 'llm' || currentActiveSection === 'parser')} 
-            initialNarrative={traderNarrative}
-            onToggleChatAssistant={toggleChatAssistant}
-            isChatAssistantVisible={isChatAssistantVisible}
-          />
+          <div ref={traderIntentInputRef}>
+            <TraderIntentInput
+              onSubmitNarrative={handleNarrativeSubmit}
+              onReset={handleReset}
+              isLoading={isLoading && (currentActiveSection === 'llm' || currentActiveSection === 'parser')} 
+              initialNarrative={traderNarrative}
+              onToggleChatAssistant={toggleChatAssistant}
+              isChatAssistantVisible={isChatAssistantVisible}
+            />
+          </div>
           
-          {isChatAssistantVisible && (
-            <div className="mt-[-1.5rem] mb-6"> 
-               <ChatAssistantContainer 
-                 onUpdateNarrative={handleUpdateNarrativeFromAssistant}
-               />
-            </div>
-          )}
+          <div
+            className={`
+              transition-all duration-500 ease-in-out
+              overflow-hidden
+              ${isChatAssistantVisible ? 'max-h-[700px] opacity-100 mt-[-1.5rem] mb-6' : 'max-h-0 opacity-0 mt-0 mb-0'}
+            `}
+            aria-hidden={!isChatAssistantVisible}
+            role="region" 
+            aria-labelledby="chat-assistant-heading" 
+          >
+            {isChatAssistantVisible && ( 
+              <ChatAssistantContainer 
+                onUpdateNarrative={handleUpdateNarrativeFromAssistant}
+              />
+            )}
+          </div>
           
           {showLlmSection && <ArrowSeparator />}
 
