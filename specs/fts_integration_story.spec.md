@@ -1,26 +1,26 @@
 # FTS Integration Story
 
-This living story connects all specifications under `specs/` into a single narrative. It outlines how the upcoming **Fractal Trading System** (FTS) pieces will merge into `jgtagentic`.
+Within **jgtagentic** rests a garden of intentions. Each specification under `specs/` is a seed awaiting the Fractal Trading System (FTS) to bring soil and sunlight. This story traces how those seeds will sprout into a unified trading spiral.
 
-## Prelude
-- `jgtml_integration.spec.md` anchors dependency expectations for using the `jgwill/jgtml` package. FTS scanning agents rely on this compatibility.
-- `fractal-database.spec.md` describes the QuestDB and Pinecone setup for storing fractal patterns and signals.
-- `reinforcement-learning.spec.md` defines RLlib PPO usage and how drift detection ties into trade decisions.
-- `use-case-automation.spec.md` covers automated workflows like scanning and backtesting.
-- `seven-step-process.spec.md` translates the FTS workflow into actionable phases for this repo.
+## Prologue
+- `jgtml_integration.spec.md` anchors our dependency on `jgwill/jgtml`. Without this root, FTS scanners cannot grow.
+- `fractal-database.spec.md` sketches the terraces of QuestDB and Pinecone where patterns and signals will live.
+- `reinforcement-learning.spec.md` reveals how RLlib PPO agents will wander through those patterns, learning their rhythm and drifting with the market winds.
+- `use-case-automation.spec.md` covers the daily rituals—scans, backtests, and orchestrated tasks—that keep the system moving.
+- `seven-step-process.spec.md` transforms the abstract FTS workflow into steps we can follow right here.
 
-## How the Pieces Fit
-1. **Database** — Signals captured from `jgtml` flow into QuestDB and Redis as outlined in `fractal-database.spec.md`.
-2. **RL Agents** — Scripts in `ftsrl/` will train using the datasets produced by step 1, per `reinforcement-learning.spec.md`.
-3. **Automation** — Batch scanners and orchestrator scripts rely on `use-case-automation.spec.md` to produce entry scripts and update the dashboard.
-4. **Documentation** — `documentation.spec.md` and `jupyter_book_agent.spec.md` guide contributors to keep the Jupyter Book and Sphinx docs in sync with code changes.
-5. **CLI & Modules** — Specs such as `jgtagenticcli.spec.md`, `agentic_entry_orchestrator.spec.md`, and `dashboard.spec.md` describe command-line tools and services that wrap the new components.
+## Weaving the Chapters
+1. **Database Roots** — Signals from `jgtml` flow into QuestDB and Redis, grounding the system in fast persistence.
+2. **Learning Branches** — Scripts in `ftsrl/` train on that data, as detailed in `reinforcement-learning.spec.md`.
+3. **Automation Leaves** — Batch scanners and orchestrator scripts rely on `use-case-automation.spec.md` to produce entry scripts and feed the dashboard.
+4. **Documentation Blossoms** — `documentation.spec.md` and `jupyter_book_agent.spec.md` keep our knowledge garden tidy and accessible.
+5. **CLI Pathways** — Tools described in `jgtagenticcli.spec.md`, `agentic_entry_orchestrator.spec.md`, and `dashboard.spec.md` guide users through the maze.
 
-## Outcome
-When all specs are implemented, contributors will be able to:
-- Ingest fractal market data, store it in QuestDB, and query similar patterns via Pinecone.
-- Train RL agents that adapt to market drift and feed decisions back into the orchestrator.
-- Automate scanning, backtesting, and live execution while logging results for analysis.
-- Generate documentation explaining every step of the trading spiral.
+## Harvest
+When all chapters converge, contributors will:
+- Ingest fractal data, store it in QuestDB, and search for echoes in Pinecone.
+- Train RL agents that adapt to market changes and guide the orchestrator.
+- Automate scanning, backtesting, and live execution while logging every spiral.
+- Document each growth ring in the Jupyter Book for others to study.
 
-This story is a compass. Each specification referenced above is a chapter, guiding developers toward a cohesive Fractal Trading System within the jgtagentic codebase.
+This story is both compass and invitation. As the FTS repository sends new pieces, they will find ready soil here—each spec a plot, each module a sprout—until `jgtagentic` blossoms into a full Fractal Trading System.
