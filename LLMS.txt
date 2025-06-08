@@ -6,7 +6,6 @@ GET /jgtagentic/README.md
 GET /docs/Trader_Analysis_to_Spec.md
 GET /docs/Story_Scenarios.md
 GET /docs/Intent-Driven_Development_SpecLang_Approach.md
-GET /docs/jgwill.jgtagentic.guide.250520174425.md
 
 # Core components documentation
 GET /jgtagentic/jgtagenticcli.py
