@@ -1,0 +1,121 @@
+# Book settings
+# Learn more at https://jupyterbook.org/customize/config.html
+
+title: My sample book
+author: The Jupyter Book Community
+logo: logo.png
+
+# Force re-execution of notebooks on each build.
+# See https://jupyterbook.org/content/execute.html
+execute:
+  execute_notebooks: force
+
+# Define the name of the latex output file for PDF builds
+latex:
+  latex_documents:
+    targetname: book.tex
+
+# Add a bibtex file so that we can create citations
+bibtex_bibfiles:
+- references.bib
+
+# Information about where the book exists on the web
+repository:
+  url: https://github.com/executablebooks/jupyter-book  # Online location of your book
+  path_to_book: docs  # Optional path to your book, relative to the repository root
+  branch: master  # Which branch of the repository should be used when creating links (optional)
+
+# Add GitHub buttons to your book
+# See https://jupyterbook.org/customize/config.html#add-a-link-to-your-repository
+html:
+  use_issues_button: true
+  use_repository_button: true
+jgt:
+  quotes_count: 1000
+  _timeframes: M1,W1,D1,H4
+  keepbidask: true
+  columns_to_remove:
+  - fdbbhigh
+  - fdbblow
+  - fdbshigh
+  - fdbslow
+  - aofhighao
+  - aoflowao
+  - aofhigh
+  - aoflow
+  _selected_columns:
+  - High
+  - Low
+  - ao
+  - ac
+  - jaw
+  - teeth
+  - lips
+  - fh
+  - fl
+  - fdbb
+  - fdbs
+  - zlcb
+  - zlcs
+  - target
+  - vaosc
+  - vaobc
+  columns_to_remove_ori:
+  - aofvalue
+  - aofhighao
+  - aoflowao
+  - aofhigh
+  - aoflow
+  - aocolor
+  - accolor
+  - fdbbhigh
+  - fdbblow
+  - fdbshigh
+  - fdbslow
+  quit_on_stop: 'false'
+  mfi_flag: true
+  balligator_flag: true
+  talligator_flag: true
+  ttf2run:
+  - mfi
+  - ttf
+  - zonesq
+  patterns:
+    mfi:
+      columns:
+      - mfi_sq
+      - mfi_green
+      - mfi_fade
+      - mfi_fake
+    zonesq:
+      columns:
+      - zone_sig
+      - mfi_sq
+    aoabz:
+      columns:
+      - aoaz
+      - aobz
+    aoac:
+      columns:
+      - ao
+      - ac
+    ttf:
+      columns:
+      - mfi_sig
+      - zone_sig
+    tstpattern03:
+      columns:
+      - mfi_sig
+      - zone_sig
+    tstpattern04:
+      columns:
+      - mfi_str
+      - zone_sig
+    tstpattern05:
+      columns:
+      - def_on_home
+      - zone_sig
+    tstpattern05b:
+      columns:
+      - redef_on_home
+      - my_new_user_pattern

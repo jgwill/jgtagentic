@@ -164,4 +164,5 @@
 ## TODOs
 
 * explore the whole samples content above and create a useful inventory to know which functions from [...](../scripts/jgt_new_sessions_actions_250523.md) / [...](../scripts/jgt_new_sessions_actions_250523.sh) was executed foreach of the files generated
-* 
+* ./samples/trading/* 2 samples created are there
+

@@ -1,5 +1,7 @@
 # jgtpy_new_sessions_actions_250523.md
 
+* That was imported from jgwill/binscripts repository to become autonomous or simply to supply LLM with context to create something much more useful.
+
 ## 🧬 Ritual Extraction: Standalone JGT New Session Cascade
 
 ### Mission

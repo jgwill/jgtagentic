@@ -1,0 +1,12 @@
+export tlid_id=240829114509
+export instrument=AUD/CAD
+export timeframe=m1
+export entry_rate=0.91581
+export stop_rate=0.91602
+export bs=S
+export lots=1
+export demo_arg="--demo"
+export OrderID=170114197
+trade_id=68817643
+LOG_FILE=/var/log/jgt/trading.log
+LOG_ENABLED=y

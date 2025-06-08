@@ -1,0 +1,12 @@
+export tlid_id=240822190651
+export instrument=USD/CAD
+export timeframe=D1
+export entry_rate=1.36194
+export stop_rate=1.35708
+export bs=B
+export lots=1
+#export demo_arg="--real"
+export demo_arg="--demo"
+export OrderID=69543300
+#trade_id=36179591
+trade_id=68790509

@@ -1,0 +1,2 @@
+{"message": "Adding an entry order with \nentry rate: 1.36194, stop: 1.35708", "entry_rate": 1.36194, "stop": 1.35708, "lots": 1}
+{"message": "The order has been added. OrderID=69543300, Type=SE, BuySell=B, Rate=1.36194, TimeInForce=GTC", "order_id": "69543300", "bs": "B", "rate": 1.36194, "stop": 1.35708, "status": "added"}
