@@ -157,31 +157,91 @@ def main():
 
     # --- Ritual: Example agentic orchestration ---
     def agentic_campaign(signal):
-        # 1. Prepare campaign environment
-        env_result = campaign_env.prepare_env(signal)
-        log_session(f"🌱 CampaignEnv: {env_result}")
-        # 2. Generate entry script
-        bash_script = entry_gen.generate_bash_entry(signal)
-        script_path = signal.get('entry_script_path')
-        if not script_path:
-            instr = signal.get('instrument', 'UNK').replace('/', '-')
-            tf = signal.get('timeframe', 'UNK')
-            tid = signal.get('tlid_id', 'UNK')
-            script_path = f"{ENTRY_SCRIPT_DIR}{instr}_{tf}_{tid}.sh"
-        with open(script_path, 'w') as sf:
-            sf.write(bash_script)
-        log_session(f"🧠 EntryScriptGen: Generated {script_path}")
-        # 3. FDBScan (if needed)
-        tf = signal.get('timeframe', None)
-        if tf:
-            fdbscan_agent.scan_timeframe(tf)
-            log_session(f"🔮 FDBScanAgent: Scanned {tf}")
-        # 4. Agentic decision
-        decision = decider.decide(signal)
-        log_session(f"🔮 AgenticDecider: {decision}")
-        # 5. Optionally, invoke wtf orchestrator
-        invoke_wtf(tf, script_path)
-        log_session(f"🌸 Spiral: Orchestration complete for {script_path}")
+        """Execute an agentic trading campaign with clear output and next steps."""
+        try:
+            # 1. Prepare campaign environment
+            env_result = campaign_env.prepare_env(signal)
+            log_session(f"🌱 Environment Preparation:\n{json.dumps(env_result, indent=2)}")
+
+            # 2. Generate entry script
+            bash_script = entry_gen.generate_bash_entry(signal)
+            script_path = signal.get('entry_script_path')
+            if not script_path:
+                instr = signal.get('instrument', 'UNK').replace('/', '-')
+                tf = signal.get('timeframe', 'UNK')
+                tid = signal.get('tlid_id', 'UNK')
+                script_path = f"{ENTRY_SCRIPT_DIR}{instr}_{tf}_{tid}.sh"
+            
+            with open(script_path, 'w') as sf:
+                sf.write(bash_script)
+            log_session(f"📜 Entry Script Generated: {script_path}")
+            
+            # 3. FDBScan analysis
+            tf = signal.get('timeframe', None)
+            if tf:
+                scan_result = fdbscan_agent.scan_timeframe(tf)
+                log_session(f"🔍 FDBScan Analysis ({tf}):\n{json.dumps(scan_result, indent=2)}")
+            
+            # 4. Get agentic decision with next steps
+            decision = decider.decide(signal)
+            
+            # Format decision output for clarity
+            decision_output = [
+                "\n🎯 SIGNAL ANALYSIS RESULTS",
+                "------------------------",
+                f"Decision: {decision['decision']}",
+                "\n📊 Context:",
+                f"- Signal Quality: {decision['context']['signal_quality']}",
+                f"- Confirmation Level: {decision['context']['confirmation_level']}",
+                f"- Risk Level: {decision['context']['risk_assessment']['level']}",
+                f"- Stop Loss: {decision['context']['risk_assessment']['stop_loss']}",
+                f"- Take Profit: {decision['context']['risk_assessment']['take_profit']}",
+                "\n⚡ NEXT STEPS:",
+                *[f"{step}" for step in decision['next_steps']],
+                "------------------------"
+            ]
+            
+            log_session("\n".join(decision_output))
+            
+            # 5. Execute timeframe orchestration
+            if tf:
+                wtf_result = invoke_wtf(tf, script_path)
+                if wtf_result:
+                    log_session(f"⚙️ Timeframe Orchestration Complete")
+                else:
+                    log_session("⚠️ Timeframe orchestration failed - check logs")
+            
+            # 6. Final summary
+            summary = [
+                "\n✨ CAMPAIGN SUMMARY",
+                "------------------------",
+                f"Instrument: {signal.get('instrument', 'UNKNOWN')}",
+                f"Timeframe: {tf or 'UNKNOWN'}",
+                f"Entry Script: {script_path}",
+                f"Signal Quality: {decision['context']['signal_quality']}",
+                "------------------------"
+            ]
+            log_session("\n".join(summary))
+            
+            return {
+                'status': 'success',
+                'script_path': script_path,
+                'decision': decision,
+                'next_steps': decision['next_steps']
+            }
+            
+        except Exception as e:
+            error_msg = f"🚨 Campaign Error: {str(e)}"
+            log_session(error_msg)
+            return {
+                'status': 'error',
+                'error': str(e),
+                'next_steps': [
+                    "1. Check error logs for details",
+                    "2. Verify signal data integrity",
+                    "3. Ensure all required components are available"
+                ]
+            }
 
     # --- Ritual: For each signal, run the agentic campaign ---
     for sig in signals:
