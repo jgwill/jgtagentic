@@ -1,5 +1,11 @@
 # Intent-Driven Development: The SpecLang Approach
 
+
+## NOTICE
+
+* This is just a draft that in here should become in the future a book on that **Intent-Driven Development** while trading. See [/docs/Trader_Analysis_to_Spec.md](../docs/Trader_Analysis_to_Spec.md) where a first prototype of what could become is documented.  All that follows SHOULD NOT BE CONSIDERED AS THE TRUTH BUT MORE JUST A SCAFFOLD OF SOMETHING forked from another repository.
+
+
 ## Status
 **Conceptual (Planned for Development - See Project Roadmap)**
 
