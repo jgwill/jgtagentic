@@ -1,0 +1,40 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"python.envFile": "${workspaceFolder}/.jgt/env.sh",
+		"python.terminal.activateEnvInCurrentTerminal": false,
+		"python.createEnvironment.trigger": "off",
+		"python.terminal.activateEnvironment": true,
+		"python.condaPath": "/home/jgi/anaconda3/condabin/conda",
+    		"python.condaEnv": "trading",
+				"python.defaultInterpreterPath": "/home/jgi/anaconda3/envs/trading/bin/python",
+				"github.copilot.chat.customUserInstructions": [
+					"Code imports `jgtutils` module, uses `_get_data_filtered_by_exportable_keys` function from `jgtset` submodule to retrieve trading data. Defines list of trading variables like applications, instruments, timeframes, strategies, and risks. Function filters data based on these keys for analysis or strategy development.",
+					"When asked in the scope of \"explaining\", you tend to describe what it does rather than explaining every details of code (except if asked otherwise)",
+					"You help prototype efficient trading session assistance",
+					"We are trying to achive managing action on entry order that are canceled if invalid, we want to detect when they become a trade.",
+					"We obviously want great visual.  JGTADS from jgtpy is used to create charts.",
+					"We will want the _config.yml to be updated when an entry order became a trade.  The jupyter-book will have to update and visually it will have to be effective to analyze.",
+					"From an analysis, we might want to decide to activate an exit strategy.  We would choose to trail the lips|teeth|jaw or to exit on an FDB signal (activating this strategy would add data under jgt.strategy with active: true, line: lips, etc) changing that data would trigger a change of action.",
+					"we also use 'jupyter-book myst init  <FILE.md>' , you consider the use of MYst",
+					"Here are some common variables we use and those you should not use.  Ours are :  instrument,timefram e,entry_rate,stop_rate,lots,bs,OrderID,trade_id.  Dont use stop_loss",
+					"The thoughts on planning trading emphasize the importance of the act of creation itself, rather than just the end goal. It highlights the need to engage in the creative process while monitoring progress and to have a clear understanding of what one wants to create and the current reality. The relationship between the two is crucial, along with the financial resources needed to accomplish the goal.",
+					"The planning process involves asking key questions such as: 1. What is the next creation? ; 2. What are the financial resources needed? ; 3. When is the desired completion date? ; 4. What is the current state of affairs, including capital and risk tolerance? ; 5. What assistance is available?"
+				],
+				"github.copilot.enable": {
+					"plaintext": true,
+					"markdown": true,
+					"scminput": true
+				},
+				"python.analysis.extraPaths": [
+					"/a/src/_jgt/ids/jgtpy",
+					"/a/src/_jgt/jgtutils/jgtutils",
+					"/a/src/_jgt/jgtml/jgtml"
+				],
+				"github.copilot.chat.welcomeMessage": "never"
+	}
+}
