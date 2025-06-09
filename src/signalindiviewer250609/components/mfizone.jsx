@@ -2,22 +2,46 @@ import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowDown } from "lucide-react";
 
-const SignalDetail = ({ mfi, zcol }: { mfi?: string; zcol?: string }) => {
+const LabelTag = ({ title }: { title: string }) => (
+  <div className="text-[10px] text-gray-500 mb-1 font-medium uppercase tracking-wide">
+    {title}
+  </div>
+);
+
+const MFIBox = ({ label, mfi }: { label: string; mfi: string }) => {
   const mfiColor =
-    mfi === "++" ? "text-green-600" :
-    mfi === "--" ? "text-yellow-600" :
-    mfi === "-+" ? "text-red-600" :
-    mfi === "+-" ? "text-gray-500" : "text-gray-400";
+    mfi === "++" ? "bg-green-100" :
+    mfi === "--" ? "bg-yellow-100" :
+    mfi === "-+" ? "bg-red-100" :
+    mfi === "+-" ? "bg-gray-100" : "bg-gray-50";
 
   return (
-    <div className="text-xs mt-2">
-      {mfi && <div className={`${mfiColor}`}>MFI: {mfi}</div>}
-      {zcol && <div className="text-gray-500">Zone: {zcol}</div>}
-    </div>
+    <Card className={`${mfiColor} border text-center rounded-2xl shadow-md w-24`}>
+      <CardContent className="p-2">
+        <div className="font-bold text-base">{label}</div>
+        <div className="text-sm font-medium">{mfi}</div>
+      </CardContent>
+    </Card>
   );
 };
 
-const TrendBox = ({ label, trend, mfi, zcol }: { label: string; trend: string; mfi?: string; zcol?: string }) => {
+const ZoneBox = ({ label, zcol }: { label: string; zcol: string }) => {
+  const zoneColor =
+    zcol === "green" ? "bg-green-100" :
+    zcol === "red" ? "bg-red-100" :
+    zcol === "gray" ? "bg-gray-100" : "bg-white";
+
+  return (
+    <Card className={`${zoneColor} border text-center rounded-2xl shadow-md w-24`}>
+      <CardContent className="p-2">
+        <div className="font-bold text-base">{label}</div>
+        <div className="text-sm font-medium text-gray-600">{zcol}</div>
+      </CardContent>
+    </Card>
+  );
+};
+
+const TrendBox = ({ label, trend }: { label: string; trend: string }) => {
   const color =
     trend === "Bullish"
       ? "bg-green-100 border-green-400"
@@ -26,11 +50,10 @@ const TrendBox = ({ label, trend, mfi, zcol }: { label: string; trend: string; m
       : "bg-gray-100 border-gray-300";
 
   return (
-    <Card className={`${color} border text-center rounded-2xl shadow-md w-44`}>
-      <CardContent className="p-4">
-        <div className="font-bold text-lg mb-1">{label}</div>
-        <div className="text-base font-medium">{trend}</div>
-        <SignalDetail mfi={mfi} zcol={zcol} />
+    <Card className={`${color} border text-center rounded-2xl shadow-md w-24`}>
+      <CardContent className="p-2">
+        <div className="font-bold text-base">{label}</div>
+        <div className="text-sm font-medium">{trend}</div>
       </CardContent>
     </Card>
   );
@@ -43,16 +66,17 @@ const Arrow = () => (
 );
 
 const InstrumentBox = () => (
-  <Card className="bg-white text-left rounded-2xl shadow-md w-60 mr-4 p-4">
-    <div className="font-bold mb-1">Instrument</div>
-    <div className="text-sm">SPX500</div>
+  <Card className="bg-white text-left rounded-2xl shadow-md w-full p-3">
+    <div className="font-bold text-base mb-1">Instrument</div>
+    <div className="text-sm">NZD/CAD</div>
+    <div className="text-xs text-gray-600 mt-1">Last H4 Close: 0.82734</div>
   </Card>
 );
 
 const SourceBox = () => (
-  <Card className="bg-white text-left rounded-2xl shadow-md w-60 mr-4 p-4">
-    <div className="font-bold mb-1">Source Columns</div>
-    <ul className="list-disc list-inside text-sm">
+  <Card className="bg-white text-left rounded-2xl shadow-md w-full p-3">
+    <div className="font-bold text-[11px] mb-1">Source Columns</div>
+    <ul className="list-disc list-inside text-[9px]">
       <li>zcol_M1</li>
       <li>zcol_W1</li>
       <li>zcol_D1</li>
@@ -65,41 +89,86 @@ const SourceBox = () => (
   </Card>
 );
 
-const SummaryBox = () => (
-  <Card className="bg-white text-left rounded-2xl shadow-md w-60 mr-4 p-4 mt-4">
-    <div className="font-bold mb-1">MFI Alignment</div>
-    <ul className="list-disc list-inside text-sm mb-2">
+const MFISummaryBox = () => (
+  <Card className="bg-white text-left rounded-2xl shadow-md w-full p-3 mt-1">
+    <div className="font-bold text-sm mb-1">MFI Alignment</div>
+    <ul className="list-disc list-inside text-xs">
       <li>M1: Bullish</li>
-      <li>W1: Bullish</li>
+      <li>W1: Bearish</li>
       <li>D1: Bearish</li>
-      <li>H4: Bearish</li>
-    </ul>
-    <div className="font-bold mb-1 mt-2">Zone Summary</div>
-    <ul className="list-disc list-inside text-sm">
-      <li>M1: green</li>
-      <li>W1: red</li>
-      <li>D1: gray</li>
-      <li>H4: red</li>
+      <li>H4: Bullish</li>
     </ul>
   </Card>
 );
 
+const ZoneSummaryBox = () => (
+  <Card className="bg-white text-left rounded-2xl shadow-md w-full p-3 mt-1">
+    <div className="font-bold text-sm mb-1">Zone Summary</div>
+    <ul className="list-disc list-inside text-xs">
+      <li>M1: red</li>
+      <li>W1: gray</li>
+      <li>D1: red</li>
+      <li>H4: green</li>
+    </ul>
+  </Card>
+);
+
+const MetadataBox = () => (
+  <Card className="bg-white text-left rounded-2xl shadow-md w-60 p-2 mr-4">
+    <div className="space-y-2">
+      <InstrumentBox />
+      <SourceBox />
+      <MFISummaryBox />
+      <ZoneSummaryBox />
+    </div>
+  </Card>
+);
+
+const ColumnWrapper = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  <Card className="bg-white text-center rounded-2xl shadow-md p-2 w-28" id={title}>
+    <LabelTag title={title} />
+    <div className="flex flex-col items-center space-y-2">
+      {children}
+    </div>
+  </Card>
+);
+
 export default function TrendDiagram() {
+  const timeframes = [
+    { label: "M1", trend: "Bullish", mfi: "++", zcol: "red" },
+    { label: "W1", trend: "Bearish", mfi: "-+", zcol: "gray" },
+    { label: "D1", trend: "Bearish", mfi: "--", zcol: "red" },
+    { label: "H4", trend: "Bullish", mfi: "++", zcol: "green" },
+  ];
+
   return (
     <div className="flex justify-center p-6">
-      <div className="flex flex-col justify-start">
-        <InstrumentBox />
-        <SourceBox />
-        <SummaryBox />
-      </div>
-      <div className="flex flex-col items-center space-y-2">
-        <TrendBox label="M1" trend="Bullish" mfi="++" zcol="green" />
-        <Arrow />
-        <TrendBox label="W1" trend="Bullish" mfi="--" zcol="red" />
-        <Arrow />
-        <TrendBox label="D1" trend="Bearish" mfi="-+" zcol="gray" />
-        <Arrow />
-        <TrendBox label="H4" trend="Bearish" mfi="--" zcol="red" />
+      <MetadataBox />
+      <div className="flex flex-row space-x-4">
+        <ColumnWrapper title="MFIZone">
+          {timeframes.map((tf, idx) => (
+            <React.Fragment key={tf.label}>
+              <TrendBox label={tf.label} trend={tf.trend} />
+              {idx < timeframes.length - 1 && <Arrow />}
+            </React.Fragment>
+          ))}
+        </ColumnWrapper>
+        <ColumnWrapper title="MFI">
+          {timeframes.map((tf, idx) => (
+            <React.Fragment key={tf.label}>
+              <MFIBox label={tf.label} mfi={tf.mfi} />
+              {idx < timeframes.length - 1 && <Arrow />}
+            </React.Fragment>
+          ))}
+        </ColumnWrapper>
+        <ColumnWrapper title="Zone">
+          {timeframes.map((tf, idx) => (
+            <React.Fragment key={tf.label}>
+              <ZoneBox label={tf.label} zcol={tf.zcol} />
+              {idx < timeframes.length - 1 && <Arrow />}
+            </React.Fragment>
+          ))}
+        </ColumnWrapper>
       </div>
     </div>
   );
