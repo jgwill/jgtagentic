@@ -130,3 +130,12 @@ cache/
 .hch/
 
 package-lock.json
+node_modules
+
+
+yarn.lock
+_samples/trading/240822190651/_config.yml.bak
+LoreWeave/
+echoform1_data.txt
+plot_points.txt
+white_feather_moments.txt
