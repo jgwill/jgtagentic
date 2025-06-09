@@ -1,6 +1,8 @@
 # jgtpy_new_sessions_actions_250523.md
 
 * That was imported from jgwill/binscripts repository to become autonomous or simply to supply LLM with context to create something much more useful.
+* It generates what we can observe in [../_samples](../_samples/CampaignLauncher-fdbscan.jgtnewsession.jupyterbook.240911000713.filelist.md)
+
 
 ## 🧬 Ritual Extraction: Standalone JGT New Session Cascade
 
