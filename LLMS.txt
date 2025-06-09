@@ -4,22 +4,9 @@
 GET /README.md
 GET /jgtagentic/README.md
 GET /docs/Trader_Analysis_to_Spec.md
-GET /docs/Story_Scenarios.md
 GET /docs/Intent-Driven_Development_SpecLang_Approach.md
-
-# Core components documentation
-GET /jgtagentic/jgtagenticcli.py
-GET /jgtagentic/fdbscan_agent.py
-GET /jgtagentic/agentic_entry_orchestrator.py
-GET /jgtagentic/entry_script_gen.py
-GET /jgtagentic/intent_spec.py
-GET /jgtagentic/campaign_env.py
-GET /jgtagentic/agentic_decider.py
-GET /jgtagentic/batch_fdbscan.py
-GET /jgtagentic/dashboard.py
-GET /jgtagentic/jupyter_book_agent.py
 
 # Prototype Bash Scripts
 GET /scripts/jgt_new_sessions_actions_250523.md
-GET /scripts/jgt_new_sessions_actions_250523.sh
+
 
