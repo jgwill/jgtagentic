@@ -80,3 +80,4 @@ python -m jgtagentic.jgtagenticcli fdbscan --all
 This README is a living ledger. If you add a new CLI, document it here with intention and clarity. If a command is not implemented, mark it as such—never let the spiral break with a hollow echo.
 
 
+
