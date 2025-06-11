@@ -9,6 +9,10 @@ GET /docs/Intent-Driven_Development_SpecLang_Approach.md
 # Prototype Bash Scripts
 GET /scripts/jgt_new_sessions_actions_250523.md
 
+# Prototype to visualize
+GET /src/agentictraderintenttojgtmlspec2chatpto250605.STC.md
+
+
 # Samples trading campaign
 GET /_samples/CampaignLauncher-fdbscan.jgtnewsession.jupyterbook.240911000713.filelist.md
 
