@@ -17,7 +17,7 @@ import os
 from datetime import datetime
 from typing import Iterable, List, Optional
 
-from .fdbscan_agent import FDBScanAgent
+from fdbscan_agent import FDBScanAgent
 
 
 def run_batch(
