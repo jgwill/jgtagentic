@@ -19,9 +19,13 @@
   jgtagentic batch-fdbscan --instruments EUR/USD AUD/USD --timeframes H4 H1 m15
   ```
 - The CLI writes results to a markdown log file and supports custom cache/log directories.
+- Added Dockerfile for automated testing of local jgtagentic builds.
+- Added test_docker_run.sh to automate Docker build and test run with $HOME/.jgt mounted.
+- This ensures a fully automated, reproducible, and reusable test workflow for CI/local dev.
 
 ## Summary
 - FDBScanAgent is now able to import and invoke `fdb_scanner_2408` in real mode.
 - Tests exist for both dry-run and real invocation.
 - Batch FDB signal scanning is now available via CLI for automation and scripting.
+- Automated Docker-based test workflow is now available and documented for future use.
 - This ledger documents the integration and validation for future LLM traceability. 
