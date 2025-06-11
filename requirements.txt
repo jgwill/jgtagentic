@@ -2,6 +2,7 @@ jgtml
 jgtpy
 jgtfxcon
 jgtutils
+jgtcore
 tlid
 jgtapy
 langchain
