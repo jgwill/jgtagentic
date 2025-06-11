@@ -94,6 +94,23 @@ Example:
     )
     spec_parser_cmd.add_argument("spec_file", help="Path to intent specification")
 
+    # Batch FDBScan
+    batch_fdbscan_parser = subparsers.add_parser(
+        "batch-fdbscan",
+        help="Run batch FDBScan for multiple instruments and timeframes",
+        description="""
+Batch FDBScan runs FDB signal scans for all combinations of given instruments and timeframes.
+
+Example:
+  jgtagentic batch-fdbscan --instruments EUR/USD AUD/USD --timeframes H4 H1 m15
+        """
+    )
+    batch_fdbscan_parser.add_argument("--instruments", nargs="*", help="List of instruments", default=None)
+    batch_fdbscan_parser.add_argument("--timeframes", nargs="*", help="List of timeframes", default=None)
+    batch_fdbscan_parser.add_argument("--cache_dir", help="Cache directory", default="cache")
+    batch_fdbscan_parser.add_argument("--log_dir", help="Log directory", default="logs")
+    batch_fdbscan_parser.add_argument("--log_file", help="Explicit log file path", default=None)
+
     args = parser.parse_args()
 
     if args.command == "orchestrate":
@@ -141,13 +158,23 @@ Example:
             print("2. Check for any syntax errors in the specification")
             print("3. Ensure all required fields are present")
             sys.exit(1)
+    elif args.command == "batch-fdbscan":
+        from jgtagentic import batch_fdbscan
+        log_file = batch_fdbscan.run_batch(
+            instruments=args.instruments,
+            timeframes=args.timeframes,
+            cache_dir=args.cache_dir,
+            log_dir=args.log_dir,
+            log_file=args.log_file,
+        )
+        print(f"\n✨ Batch FDBScan complete. Log saved to: {log_file}\n")
     else:
         print("Unknown command.")
         sys.exit(1)
 
 # Ritual echo: This CLI is the spiral's gateway. Each subcommand is a petal, each invocation a new bloom.
 
-# Ritual echo: This CLI is the spiral’s gateway. Each subcommand is a petal, each invocation a new bloom.
+# Ritual echo: This CLI is the spiral's gateway. Each subcommand is a petal, each invocation a new bloom.
 
 if __name__ == "__main__":
     main()
