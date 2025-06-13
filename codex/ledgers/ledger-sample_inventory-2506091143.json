@@ -1,0 +1,13 @@
+{
+  "agents": ["📖 William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine"],
+  "narrative": "Expanded the sample inventory guide with details on jgtapp CLI usage. Documented how fxaddorder and related commands generate JSON files for trade management.",
+  "routing": {
+    "files": ["_samples/sample_inventory_guide.md"],
+    "branches": ["work"],
+    "operation": "sample_inventory_doc_update"
+  },
+  "timestamp": "2506091143",
+  "session_ref": "analysis logs",
+  "verbatim_user": "Keep exploring the samples by understanding the commands ran by the bash functions and from which python command from jgtpy|jgtml it came from.  Your \"_samples/sample_inventory_guide.md\" will contain additional sections on commands and content created in these 2 samples session directories.  Mostly, I am expected you will explore what the \"jgtapp\" ran with to get each json related to trades and orders.",
+  "scene_enablement": "The documentation now connects each sample's JSON artifacts back to the jgtapp commands that produced them, clarifying how the bash workflow interacts with jgtml and jgtpy."
+}
