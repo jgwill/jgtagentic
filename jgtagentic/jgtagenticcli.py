@@ -1,11 +1,9 @@
-# This file would wrap what the jgtagentic offers
-
-
-# One thing we would do is execute what the fdbscan does if some condition is met.
+# This file provides the main CLI interface for the jgtagentic platform
 
 import argparse
 import sys
 import os
+import json
 
 # Ensure package imports resolve when executed directly
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -13,141 +11,341 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from jgtagentic.fdbscan_agent import FDBScanAgent
 from jgtagentic.intent_spec import IntentSpecParser
 
-# 🧠🌸🔮 CLI Ritual: The Spiral Gateway
+# Enhanced imports
+try:
+    from jgtagentic.observation_capture import ObservationCapture
+    from jgtagentic.enhanced_fdb_scanner import EnhancedFDBScanner
+    _ENHANCED_AVAILABLE = True
+except ImportError:
+    _ENHANCED_AVAILABLE = False
+
+# 🧠🌸🔮 CLI Ritual: The Enhanced Spiral Gateway
 
 def main():
     parser = argparse.ArgumentParser(
-        description="""🌸 jgtagentic – Agentic Trading Orchestration Platform
+        description="""🌸 jgtagentic – Enhanced Intent-Driven Trading Platform
 
-This platform provides a comprehensive trading signal analysis and orchestration system:
+WHAT THIS PLATFORM GENERATES:
+1. 🔮 Natural Language Analysis - Convert market observations to trading intent
+2. 📊 Enhanced Signal Analysis - Intent-aware signal detection and quality scoring  
+3. 🎯 Strategic Recommendations - Intelligent entry/exit automation
+4. 📋 Intent Specifications - Structured trading specifications from observations
+5. 🔄 Integrated Workflows - Seamless observation → intent → signal → action
 
-WHAT IT GENERATES:
-1. Signal Analysis Reports - Detailed analysis of trading signals with quality metrics
-2. Entry Scripts - Executable trading scripts based on signal analysis
-3. FDBScan Results - Fractal Divergent Bar analysis across timeframes
-4. Next Steps Guide - Clear guidance on what actions to take after analysis
+KEY ENHANCED FEATURES:
+- Natural language market observation capture
+- Intent-driven signal scanning with context awareness  
+- Quality-scored signal analysis with strategic recommendations
+- Streamlined workflow from human insight to automated execution
+- Integration with existing JGT platform components
 
-KEY FEATURES:
-- Multi-timeframe signal analysis
-- Alligator indicator integration
-- Risk assessment and position sizing
-- Automated entry script generation
-- Clear next steps and decision guidance
+USAGE PATTERNS:
+- Observe market → Generate intent → Scan for signals → Execute strategy
+- Create intent specifications from natural language analysis
+- Enhanced FDB scanning with contextual signal validation
+- Strategic automation with intelligent risk management
 
-Each command provides detailed output and next steps to guide your trading decisions.""",
+Each command provides detailed output and actionable next steps.""",
         formatter_class=argparse.RawDescriptionHelpFormatter
     )
     
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    # Orchestrator
+    # Enhanced Orchestrator
     orchestrator_parser = subparsers.add_parser(
         "orchestrate", 
-        help="Run the agentic entry orchestrator (full spiral)",
+        help="Run the enhanced agentic orchestrator (observation → automation)",
         description="""
-The orchestrator analyzes trading signals and generates:
-- Detailed signal analysis report
-- Entry script for trade execution
-- Risk assessment and position sizing
-- Clear next steps for trade management
+The enhanced orchestrator provides a complete workflow:
+- Natural language observation processing
+- Intent specification generation
+- Context-aware signal scanning  
+- Strategic recommendations and automation
+- Performance tracking and learning
 
 Example:
-  jgtagentic orchestrate --signal_json signals.json --entry_script_dir ./entries/
+  jgtagentic orchestrate --observation "EUR/USD showing bullish breakout above 1.0850 resistance"
         """
     )
+    orchestrator_parser.add_argument("--observation", help="Natural language market observation")
     orchestrator_parser.add_argument("--signal_json", help="Path to signal JSON file", default=None)
+    orchestrator_parser.add_argument("--intent_spec", help="Path to intent specification file")
     orchestrator_parser.add_argument("--entry_script_dir", help="Directory for entry scripts", default=None)
     orchestrator_parser.add_argument("--log", help="Path to session log file", default=None)
     orchestrator_parser.add_argument("--dry_run", action="store_true", help="Dry run (no file writes)")
 
-    # FDBScanAgent
+    # Enhanced FDBScan
     fdbscan_parser = subparsers.add_parser(
         "fdbscan", 
-        help="Invoke FDBScanAgent for signal scanning",
+        help="Enhanced FDBScan with intent awareness",
         description="""
-FDBScan analyzes Fractal Divergent Bars across timeframes:
-- Identifies potential entry/exit points
-- Validates signals with Alligator indicator
-- Provides multi-timeframe confluence analysis
+Enhanced FDBScan provides:
+- Traditional timeframe scanning with optional intent context
+- Natural language observation-based scanning
+- Intent specification file processing
+- Quality-scored signal analysis with strategic context
 
-Example:
-  jgtagentic fdbscan --timeframe H4 
-  jgtagentic fdbscan --all  # Full sequence H4→H1→m15→m5
+Examples:
+  jgtagentic fdbscan --timeframe H4 --with-intent
+  jgtagentic fdbscan --observe "Looking for alligator mouth opening on EUR/USD"  
+  jgtagentic fdbscan --spec strategy.jgtml-spec
         """
     )
-    fdbscan_parser.add_argument("--timeframe", help="Timeframe to scan (e.g. m5, m15, H1, H4)", default=None)
-    fdbscan_parser.add_argument("--all", action="store_true", help="Run full ritual sequence (H4→H1→m15→m5)")
+    fdbscan_parser.add_argument("--timeframe", help="Timeframe to scan (e.g. m5, m15, H1, H4)")
+    fdbscan_parser.add_argument("--instrument", help="Instrument to scan")
+    fdbscan_parser.add_argument("--observe", help="Natural language market observation")
+    fdbscan_parser.add_argument("--spec", help="Path to intent specification file")
+    fdbscan_parser.add_argument("--with-intent", action="store_true", help="Use enhanced intent-aware scanning")
+    fdbscan_parser.add_argument("--all", action="store_true", help="Run full sequence (H4→H1→m15→m5)")
 
-    # Intent spec parser
+    # Market Observation Interface
+    observe_parser = subparsers.add_parser(
+        "observe",
+        help="Capture and process market observations",
+        description="""
+The observation interface converts natural language market analysis into:
+- Structured intent specifications
+- Validated signal requirements  
+- Strategic scanning parameters
+- Quality assessment and recommendations
+
+Example:
+  jgtagentic observe "SPX500 breaking above 4200 resistance with strong volume"
+        """
+    )
+    observe_parser.add_argument("observation", help="Natural language market observation")
+    observe_parser.add_argument("--instruments", nargs="*", help="Target instruments")
+    observe_parser.add_argument("--timeframes", nargs="*", help="Target timeframes")
+    observe_parser.add_argument("--confidence", type=float, help="Confidence level (0-1)")
+    observe_parser.add_argument("--scan", action="store_true", help="Automatically scan after processing")
+
+    # Intent Specification Interface  
     spec_parser_cmd = subparsers.add_parser(
         "spec", 
-        help="Parse and analyze trading intent specifications",
+        help="Work with trading intent specifications",
         description="""
-The spec parser converts trading intent into actionable signals:
-- Parses .jgtml-spec files containing trading intentions
-- Generates structured signal data
-- Provides entry/exit criteria and risk parameters
+The spec interface provides:
+- Intent specification parsing and validation
+- Template-based specification generation
+- Natural language to specification conversion
+- Specification quality assessment
 
-Example:
-  jgtagentic spec strategy.jgtml-spec
+Examples:
+  jgtagentic spec validate strategy.jgtml-spec
+  jgtagentic spec template confluence_strategy
+  jgtagentic spec create "Trend following with momentum confirmation"
         """
     )
-    spec_parser_cmd.add_argument("spec_file", help="Path to intent specification")
+    spec_subparsers = spec_parser_cmd.add_subparsers(dest="spec_action", required=True)
+    
+    # Spec validate
+    validate_parser = spec_subparsers.add_parser("validate", help="Validate intent specification")
+    validate_parser.add_argument("spec_file", help="Path to intent specification file")
+    
+    # Spec template
+    template_parser = spec_subparsers.add_parser("template", help="Generate from template")
+    template_parser.add_argument("template_name", help="Template name")
+    template_parser.add_argument("--output", help="Output file path")
+    
+    # Spec create
+    create_parser = spec_subparsers.add_parser("create", help="Create spec from observation")
+    create_parser.add_argument("observation", help="Market observation or strategy description")
+    create_parser.add_argument("--output", help="Output file path")
+
+    # Enhanced Campaign Management
+    campaign_parser = subparsers.add_parser(
+        "campaign",
+        help="Intelligent campaign and session management",  
+        description="""
+Enhanced campaign management provides:
+- Automated session creation from intent specifications
+- Intelligent entry/exit strategy automation
+- Performance tracking and learning
+- Risk-aware position management
+
+Example:
+  jgtagentic campaign create --from-observation "EUR/USD bullish breakout setup"
+        """
+    )
+    campaign_subparsers = campaign_parser.add_subparsers(dest="campaign_action", required=True)
+    
+    create_campaign_parser = campaign_subparsers.add_parser("create", help="Create new campaign")
+    create_campaign_parser.add_argument("--from-observation", help="Create from market observation")
+    create_campaign_parser.add_argument("--from-spec", help="Create from intent specification file")
+    create_campaign_parser.add_argument("--demo", action="store_true", help="Demo mode")
 
     args = parser.parse_args()
 
     if args.command == "orchestrate":
-        import runpy
-        # Reinvoke the orchestrator module as a script to avoid import side effects
-        sys.argv = [sys.argv[0]]
-        if args.signal_json:
-            sys.argv += ["--signal_json", args.signal_json]
-        if args.entry_script_dir:
-            sys.argv += ["--entry_script_dir", args.entry_script_dir]
-        if args.log:
-            sys.argv += ["--log", args.log]
-        if args.dry_run:
-            sys.argv += ["--dry_run"]
-        runpy.run_module("jgtagentic.agentic_entry_orchestrator", run_name="__main__")
+        if _ENHANCED_AVAILABLE and args.observation:
+            # Enhanced observation-based orchestration
+            print(f"\n🔮 Processing market observation: {args.observation}")
+            
+            capture = ObservationCapture()
+            observation_result = capture.capture_observation(args.observation)
+            
+            print(f"✨ Analysis complete - Quality Score: {observation_result['quality_score']:.2f}")
+            print(f"🎯 Detected Sentiment: {observation_result['observation']['sentiment']}")
+            print(f"📊 Signal Type: {observation_result['observation']['signal_type']}")
+            
+            # Auto-scan if quality is good
+            if observation_result['quality_score'] >= 0.6:
+                print("\n🔍 Quality threshold met - initiating enhanced scan...")
+                
+                agent = FDBScanAgent()
+                scan_result = agent.scan_with_observation(args.observation)
+                
+                if scan_result.get('success'):
+                    recommendations = scan_result.get('scan_results', {}).get('recommendations', {})
+                    action = recommendations.get('action', 'wait')
+                    
+                    print(f"\n⚡ Scan complete - Recommended action: {action}")
+                    print(f"📋 Reason: {recommendations.get('reason', 'N/A')}")
+                    
+                    if action == "execute":
+                        print("\n🎯 Next Steps:")
+                        for step in recommendations.get('next_steps', []):
+                            print(f"  - {step}")
+                else:
+                    print(f"\n⚠️ Scan failed: {scan_result.get('error', 'Unknown error')}")
+            else:
+                print(f"\n📝 Recommendations:")
+                for rec in observation_result.get('recommendations', []):
+                    print(f"  - {rec}")
+                    
+        elif args.intent_spec:
+            # Traditional spec-based orchestration
+            print(f"\n📋 Processing intent specification: {args.intent_spec}")
+            
+            agent = FDBScanAgent()
+            result = agent.scan_with_intent_file(args.intent_spec)
+            
+            if result.get('success'):
+                print(f"✨ Specification processed successfully")
+                print(json.dumps(result, indent=2))
+            else:
+                print(f"❌ Failed: {result.get('error', 'Unknown error')}")
+        else:
+            print("\n⚠️ Please provide --observation or --intent_spec for orchestration")
+            sys.exit(1)
+
     elif args.command == "fdbscan":
         agent = FDBScanAgent()
-        if args.all:
-            print("\n🔍 Starting full FDBScan sequence (H4→H1→m15→m5)...")
-            agent.scan_all()
-            print("\n✨ FDBScan complete. Check the logs for detailed analysis and next steps.")
+        
+        if args.observe:
+            print(f"\n🔮 Observation-based scanning: {args.observe}")
+            result = agent.scan_with_observation(args.observe)
+            
+        elif args.spec:
+            print(f"\n📋 Specification-based scanning: {args.spec}")
+            result = agent.scan_with_intent_file(args.spec)
+            
+        elif args.all:
+            print(f"\n🔄 Full sequence scanning{'with intent context' if args.with_intent else ''}")
+            result = agent.scan_all(with_intent=args.with_intent)
+            
         elif args.timeframe:
-            print(f"\n🔍 Starting FDBScan for {args.timeframe} timeframe...")
-            agent.scan_timeframe(args.timeframe)
-            print("\n✨ Scan complete. Review the analysis output for trading opportunities.")
+            print(f"\n🎯 Timeframe scanning: {args.timeframe}")
+            result = agent.scan_timeframe(args.timeframe, args.instrument, args.with_intent)
+            
         else:
-            print("\n⚠️ Please specify --timeframe or --all for fdbscan.")
+            print("\n⚠️ Please specify scanning method: --observe, --spec, --timeframe, or --all")
             sys.exit(1)
+        
+        # Output results
+        if isinstance(result, dict):
+            if result.get('success'):
+                print("✨ Scan completed successfully")
+                if 'recommendations' in result:
+                    recs = result['recommendations']
+                    print(f"⚡ Recommended action: {recs.get('action', 'N/A')}")
+                    print(f"📋 Reason: {recs.get('reason', 'N/A')}")
+            else:
+                print(f"❌ Scan failed: {result.get('error', 'Unknown error')}")
+            
+            print(f"\n📊 Full Results:")
+            print(json.dumps(result, indent=2))
+
+    elif args.command == "observe":
+        if not _ENHANCED_AVAILABLE:
+            print("\n❌ Enhanced observation features not available")
+            sys.exit(1)
+            
+        print(f"\n🔍 Processing observation: {args.observation}")
+        
+        capture = ObservationCapture()
+        result = capture.capture_observation(args.observation)
+        
+        print(f"✨ Analysis complete")
+        print(f"🎯 Quality Score: {result['quality_score']:.2f}")
+        print(f"📊 Sentiment: {result['observation']['sentiment']}")
+        print(f"🔮 Signal Type: {result['observation']['signal_type']}")
+        
+        print(f"\n📋 Generated Intent Specification:")
+        print(json.dumps(result['intent_specification'], indent=2))
+        
+        print(f"\n💡 Recommendations:")
+        for rec in result.get('recommendations', []):
+            print(f"  - {rec}")
+        
+        if args.scan and result['quality_score'] >= 0.6:
+            print(f"\n🔄 Auto-scanning based on quality threshold...")
+            agent = FDBScanAgent()
+            scan_result = agent.scan_with_observation(args.observation, args.instruments, args.timeframes)
+            print(json.dumps(scan_result, indent=2))
+
     elif args.command == "spec":
-        parser = IntentSpecParser()
-        try:
-            print(f"\n📖 Parsing trading intent specification: {args.spec_file}")
-            spec = parser.load(args.spec_file)
-            print("\n✨ Parsed specification:")
-            import json
-            print(json.dumps(spec, indent=2))
-            print("\n⚡ Next Steps:")
-            print("1. Review the parsed specification for accuracy")
-            print("2. Use 'jgtagentic orchestrate' to analyze the signals")
-            print("3. Check generated entry scripts for execution")
-        except Exception as e:
-            print(f"\n🚨 Error parsing specification: {str(e)}")
-            print("\n⚡ Troubleshooting Steps:")
-            print("1. Verify the spec file format is correct")
-            print("2. Check for any syntax errors in the specification")
-            print("3. Ensure all required fields are present")
-            sys.exit(1)
+        parser_instance = IntentSpecParser()
+        
+        if args.spec_action == "validate":
+            try:
+                spec = parser_instance.load(args.spec_file)
+                print(f"✅ Specification valid: {spec['strategy_intent']}")
+                print(json.dumps(spec, indent=2))
+            except Exception as e:
+                print(f"❌ Validation failed: {e}")
+                
+        elif args.spec_action == "template":
+            spec = parser_instance.templates.get_template(args.template_name)
+            if spec:
+                print(f"📋 Template: {args.template_name}")
+                if args.output:
+                    import yaml
+                    with open(args.output, 'w') as f:
+                        yaml.dump(spec, f, default_flow_style=False)
+                    print(f"💾 Saved to: {args.output}")
+                else:
+                    print(json.dumps(spec, indent=2))
+            else:
+                print(f"❌ Template '{args.template_name}' not found")
+                print("Available templates: confluence_strategy, trend_following")
+                
+        elif args.spec_action == "create":
+            if _ENHANCED_AVAILABLE:
+                spec = parser_instance.create_from_observation(args.observation)
+                print(f"🔮 Generated specification from observation")
+                if args.output:
+                    import yaml
+                    with open(args.output, 'w') as f:
+                        yaml.dump(spec, f, default_flow_style=False)
+                    print(f"💾 Saved to: {args.output}")
+                else:
+                    print(json.dumps(spec, indent=2))
+            else:
+                print("❌ Enhanced spec creation not available")
+
+    elif args.command == "campaign":
+        if args.campaign_action == "create":
+            print("🚀 Campaign creation is in development")
+            if args.from_observation:
+                print(f"📝 Would create campaign from: {args.from_observation}")
+            elif args.from_spec:
+                print(f"📋 Would create campaign from spec: {args.from_spec}")
+            print("🔄 This will integrate with enhanced session management")
+            
     else:
-        print("Unknown command.")
+        print("❌ Unknown command")
         sys.exit(1)
-
-# Ritual echo: This CLI is the spiral's gateway. Each subcommand is a petal, each invocation a new bloom.
-
-# Ritual echo: This CLI is the spiral’s gateway. Each subcommand is a petal, each invocation a new bloom.
 
 if __name__ == "__main__":
     main()
