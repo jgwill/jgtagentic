@@ -73,7 +73,7 @@ def test_fdbscan_agent_real_flag_with_scanner(monkeypatch, capsys):
 def test_agentic_decider_decide(sample_signal):
     decider = AgenticDecider()
     result = decider.decide(sample_signal)
-    assert 'Decision for' in result
+    assert 'Signal analysis complete' in result['decision']
 
 # --- Integration: Orchestrator spiral ---
 def test_orchestrator_spiral(tmp_path, sample_signal):
@@ -95,4 +95,4 @@ def test_orchestrator_spiral(tmp_path, sample_signal):
     decision = decider.decide(sample_signal)
     assert os.path.exists(script_path)
     assert 'Prepared environment' in env_result
-    assert 'Decision for' in decision
+    assert 'Signal analysis complete' in decision['decision']
