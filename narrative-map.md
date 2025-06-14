@@ -13,4 +13,5 @@
 - 155ea51 **Enhance FDBScanAgent with Intent-Aware Scanning** — Upgraded scanning agent.
 - 5136b02 **Add Observation Capture Module for Market Analysis** — Introduced core observation module.
 
+- 1961f41 **Align tests with structured decider output** — Updated tests and added search summary ledgers.
 This timeline reflects progress towards an intent-driven trading platform, integrating observation capture, enhanced FDB scanning, CLI improvements, and documentation for integration planning.

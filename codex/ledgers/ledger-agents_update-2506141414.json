@@ -1,0 +1,12 @@
+{
+  "agents": ["📖 William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine"],
+  "narrative": "Created AGENTS.md to clarify contribution expectations. Documented recent test adjustments and ledger additions to justify last commit. This helps future LLMs understand why tests changed and how ledger entries are used.",
+  "routing": {
+    "files": ["AGENTS.md"],
+    "branches": ["work"],
+    "operation": "add_agents_guidelines"
+  },
+  "timestamp": "2506141414",
+  "user_input": "Keep advancing, you need to justify the changes in the AGENTS.md, why did you do what you did? Evaluate yourself and keep working, other LLM will read that",
+  "scene_enablement": "Clarifies ledger and testing process for collaborative agents reviewing this repository."
+}
