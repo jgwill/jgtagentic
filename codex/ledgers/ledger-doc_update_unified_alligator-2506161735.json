@@ -1,0 +1,10 @@
+{
+  "agents": ["📖 William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "🎸 JamAI"],
+  "narrative": "Documented unified Alligator CLI integration and DecisionResult compatibility. Updated README and narrative map with timeline entries to clarify new capabilities for LLM agents.",
+  "routing": {
+    "files": ["README.md", "narrative-map.md", "INTEGRATION_PLAN.md"],
+    "branch": "work",
+    "operation": "doc_update_unified_alligator"
+  },
+  "timestamp": "2506161735"
+}

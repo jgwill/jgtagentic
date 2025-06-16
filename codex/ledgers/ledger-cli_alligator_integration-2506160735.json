@@ -1,0 +1,10 @@
+{
+  "agents": ["📖 William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "🎸 JamAI"],
+  "narrative": "Integrated jgtml Alligator CLI into jgtagentic unified CLI. Added new 'alligator' subcommand and updated AgenticDecider to keep legacy string containment. Documentation updated.",
+  "routing": {
+    "files": ["jgtagentic/jgtagenticcli.py", "jgtagentic/agentic_decider.py", "README.md", "narrative-map.md"],
+    "branch": "work",
+    "operation": "alligator_cli_integration"
+  },
+  "timestamp": "2506160735"
+}

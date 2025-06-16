@@ -73,6 +73,7 @@ Transform the JGT platform from documentation to functional intent-driven tradin
 - [x] Create observation capture interface  
 - [x] Enhance FDB scanner with intent awareness
 - [x] Build unified CLI interface
+- [x] Delegate Alligator analysis to `jgtml.alligator_cli` via new subcommand
 - [x] Establish observation → intent → signal workflow
 
 ### Phase 2: Enhanced Scanner Integration

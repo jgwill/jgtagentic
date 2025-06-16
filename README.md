@@ -63,6 +63,14 @@ agentic-fdbscan scan --timeframe m15 --instrument EUR/USD --real
 
 # Run the full FDBScan ritual sequence
 python -m jgtagentic.jgtagenticcli fdbscan --all
+
+# Unified Alligator analysis
+python -m jgtagentic.jgtagenticcli alligator -- -i EUR/USD -t H4 -d long
+
+The new `alligator` subcommand delegates to `jgtml.alligator_cli` so analysis
+tools remain consistent across projects. The `AgenticDecider` now returns a
+`DecisionResult` object to preserve legacy string containment checks while
+exposing rich decision metadata.
 ```
 
 ---
