@@ -63,6 +63,9 @@ agentic-fdbscan scan --timeframe m15 --instrument EUR/USD --real
 
 # Run the full FDBScan ritual sequence
 python -m jgtagentic.jgtagenticcli fdbscan --all
+
+# Unified Alligator analysis
+python -m jgtagentic.jgtagenticcli alligator -- -i EUR/USD -t H4 -d long
 ```
 
 ---

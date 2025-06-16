@@ -16,7 +16,7 @@ These branches culminate in the current **work** branch based on `main`, where A
 1. **Review jgtml Alligator modules**
    - `AlligatorIllusionDetector.py` and related scripts were cherry-picked for compatibility.
 2. **Unify CLI entry points**
-   - Ensure `jgtagenticcli.py` can invoke the detector and enhanced scanner seamlessly.
+   - Ensure `jgtagenticcli.py` can invoke the detector and enhanced scanner seamlessly. ✅ Implemented via new `alligator` subcommand delegating to `jgtml.alligator_cli`.
 3. **Update documentation**
    - Integrate ledger summaries and docs from the four feature branches.
 4. **Prepare future merges**
