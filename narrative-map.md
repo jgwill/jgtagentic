@@ -9,3 +9,4 @@ This map traces recent commits on branch `work`.
 - **a1ce95f** — Latest commit before this PR, adding `demo.py` and a complete trading workflow document.
 
 The current update adds an **FDB Trading Automation Guide** and updates `llms.txt` so future LLMs can access it directly.
+- **4935355** — Document failure to fetch fresh data during multi-instrument FDB scans.
