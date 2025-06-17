@@ -1,0 +1,13 @@
+{
+  "agents": ["♾️ William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine"],
+  "narrative": "Cherry-picked integration documentation from main: INTEGRATION_PLAN, INTEGRATION_ROADMAP, and INTEGRATION_SUCCESS_REPORT. This aligns the work branch with the vision and progress metrics for intent-driven trading automation.",
+  "routing": {
+    "files": ["INTEGRATION_PLAN.md", "INTEGRATION_ROADMAP.md", "INTEGRATION_SUCCESS_REPORT.md", "narrative-map.md"],
+    "branches": ["work"],
+    "operation": "main_docs_merge"
+  },
+  "timestamp": "2506170401",
+  "user_input": "keep working on implementing and see if merge todo from main branch",
+  "scene": "With the roadmap and success report unified, future development can reference a shared narrative, guiding automation enhancements.",
+  "glyphs": "🔗📚✨"
+}

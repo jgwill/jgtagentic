@@ -22,3 +22,8 @@ Timeline of key commits on the `work` branch leading up to the latest cherry-pic
 - **fbe07e8** – Cherry-pick: Phase 2 and Phase 3 ledger docs from main
 - **f486c94** – Cherry-pick: demo script and Complete Trading Workflow doc
 This map highlights how the work branch integrates upstream ledger updates and documentation, including Phase 2/3 planning and a demo workflow from main.
+- **ea3f512** – Sync ledger docs from main (Alligator CLI, story expansion)
+- **15df2c9** – Cherry-pick: Integration Plan for intent-driven automation
+- **6bec742** – Cherry-pick: Integration Roadmap outlining phases
+- **7963dfb** – Cherry-pick: Integration Success Report summarizing Phase 1
+
