@@ -33,8 +33,34 @@ Further JSON files like `trade_<id>.json` or `fxtransact_<id>.json` appear when
 follow-up scripts. Values stored in `.jgt/env.sh` (such as `OrderID` and
 `trade_id`) are used by these commands to manage open positions.
 
-The session notebooks (`jgtaction.ipynb`) import `jgtml.jgtapp` functions to
-fetch IDS/CDS data, plot charts, and call the same trading actions from Python.
-Together, these CLI and Python invocations explain how the JSON data in
+### Notebook Integration
+
+The session notebooks (`jgtaction.ipynb`) import `jgtml.jgtapp` functions such as
+`fxaddorder`, `fxrmtrade`, and `fxmvstopfdb` to execute trading actions directly
+from Python. Environment values from `.jgt/env.sh` provide the IDs and
+parameters for these calls, ensuring that notebook execution mirrors the CLI.
+
+### CLI Commands in `entry.md`
+
+Within each session's `entry.md`, a code block lists the commands that ran when
+the session was created:
+
+```
+#fxtr -id $OrderID $demo_arg
+#fxrmorder -id $OrderID $demo_arg
+#fxclosetrade -tid $trade_id $demo_arg
+#fxtr -id $OrderID $demo_arg
+#jgtapp fxwatchorder -id $OrderID  -d $bs \$demo_arg
+#jgtapp fxmvstop -tid $trade_id -x $1 $demo_arg
+#jgtapp fxrmtrade -tid $trade_id  $demo_arg
+#jgtapp fxmvstopgator -tid $trade_id -i $instrument -t $timeframe --lips $demo_arg
+#jgtapp fxmvstopfdb -tid $trade_id -i $instrument -t $timeframe  $demo_arg
+#jgtapp fxstatusorder -id $OrderID  $demo_arg
+```
+
+This sequence documents the raw `jgtapp` interactions that produced the JSON
+files in `data/jgt/` and serves as a reference for replaying the workflow.
+
+Together, the CLI scripts and notebook calls explain how the JSON data in
 `data/jgt/` was produced during each sample session.
 

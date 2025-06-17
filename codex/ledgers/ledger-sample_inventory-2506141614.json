@@ -1,0 +1,13 @@
+{
+  "agents": ["📖 William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine"],
+  "narrative": "Expanded the sample inventory guide with specific CLI commands and notebook integration notes, clarifying how jgtml.jgtapp functions are used from both bash and Python.",
+  "routing": {
+    "files": ["_samples/sample_inventory_guide.md"],
+    "branches": ["work"],
+    "operation": "sample_inventory_update"
+  },
+  "timestamp": "2506141614",
+  "session_ref": "analysis logs",
+  "verbatim_user": "In previous turns, the user asked for a deeper exploration of commands run by bash functions and the corresponding Python interactions in jgtpy|jgtml.",
+  "scene_enablement": "This documentation now provides a step-by-step reference for replicating sample sessions, bridging CLI commands and Python code."
+}
