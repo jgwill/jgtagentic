@@ -127,3 +127,6 @@ test/*.csv
 *.log
 
 cache/
+
+# tushell memory outputs
+Workspace.*.json

@@ -1,0 +1,10 @@
+{
+  "agents": ["📖 William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine"],
+  "narrative": "Cherry-picked documentation updates from main: Phase 2 & Phase 3 ledger planning and the Complete Trading Workflow demo. The work branch now mirrors upstream docs for unified development.",
+  "routing": {
+    "files": ["book/_/ledgers/ledger_phase2_enhanced_scanner_integration_2501011830.md", "book/_/ledgers/ledger_phase3_environment_optimization_2501011900.md", "docs/Complete_Trading_Workflow.md", "demo.py", "scripts/automated_entry_system.py", "narrative-map.md"],
+    "branches": ["work"],
+    "operation": "main_sync"
+  },
+  "timestamp": "2506170232"
+}

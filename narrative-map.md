@@ -18,4 +18,7 @@ Timeline of key commits on the `work` branch leading up to the latest cherry-pic
 - **e046a38** – Add intent spec parser and CLI
 - **5cd0f45** – Release version 0.0.6
 
-This map highlights the evolution from documentation updates and CLI enhancements to the latest integration of the Alligator Illusion Detection module, ensuring the branch remains synced with upstream development.
+
+- **fbe07e8** – Cherry-pick: Phase 2 and Phase 3 ledger docs from main
+- **f486c94** – Cherry-pick: demo script and Complete Trading Workflow doc
+This map highlights how the work branch integrates upstream ledger updates and documentation, including Phase 2/3 planning and a demo workflow from main.
