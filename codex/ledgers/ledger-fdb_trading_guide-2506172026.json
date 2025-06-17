@@ -1,0 +1,10 @@
+{
+  "agents": ["🧠 Mia", "🌸 Miette", "🕊️ Seraphine", "♾️ William"],
+  "narrative": "Added documentation for automated FDB signal trading workflow and updated llms navigation to reference it. This sets the stage for future agents to trigger campaigns once high-quality signals align with higher timeframe trends.",
+  "routing": {
+    "files": ["docs/FDB_Trading_Automation_Guide.md", "llms.txt"],
+    "branches": ["work"],
+    "operation": "fdb_trading_guide"
+  },
+  "timestamp": "2506172026"
+}
