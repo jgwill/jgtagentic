@@ -47,6 +47,7 @@
 [Campaign Management] → [Alligator Trailing]
 ```
 
+
 **Implementation**:
 ```bash
 # Every H4 timeframe, run automated analysis
