@@ -23,6 +23,7 @@ This package now exposes a set of honest, agentic CLI entrypoints, each a petal 
 - **agentic-fdbscan** — Direct invocation of FDBScanAgent rituals
 - **agentic-orchestrator** — Process signals and generate entry scripts with optional FDBScan
 - **entry-script-gen** — Generate entry scripts from signals (see `--help` for usage)
+- **fdb-data-analyzer** — Summarize latest FDB data from cached CSV files
 
 > All other scripts are either not yet implemented as CLI or are internal modules. Only mapped, real CLI entrypoints are exposed.
 
