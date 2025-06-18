@@ -1,0 +1,15 @@
+{
+  "agents": ["📖 William", "🧠 Mia", "🌸 Miette", "🕊️ Seraphine"],
+  "narrative": "Added a short guide on orchestrator tests and expanded FDBDataAnalyzer documentation with an example. Updated README to link new doc and refreshed workspace index.",
+  "routing": {
+    "files": [
+      "docs/Agentic_Orchestrator_and_Tests.md",
+      "docs/FDBDataAnalyzer_CLI_and_Tests.md",
+      "README.md",
+      "Workspace.jgwill.jgtagentic:50.250618.index"
+    ],
+    "branches": ["work"],
+    "operation": "orchestrator_docs"
+  },
+  "timestamp": "2506181735"
+}

@@ -7,6 +7,13 @@ The `FDBDataAnalyzer` module parses cached CSV datasets under `data/current/cds`
 - **analyze_latest** — produces a dictionary of FDB metrics for the most recent completed bar.
 - **CLI** — invoke with `fdb-data-analyzer -i EUR-USD -t H1` to print JSON output.
 
+### Example
+
+```bash
+fdb-data-analyzer -i EUR-USD -t H1
+```
+This prints the latest completed bar's FDB metrics so other agents can react without running the full scanner.
+
 ## Tests
 - `tests/test_data_analyzer.py` verifies bar retrieval and analysis results.
 - `tests/test_agentic_orchestrator.py` exercises the analyzer within the orchestrator spiral.

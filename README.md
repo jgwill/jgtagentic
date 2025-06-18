@@ -25,6 +25,7 @@ This package now exposes a set of honest, agentic CLI entrypoints, each a petal 
 - **entry-script-gen** — Generate entry scripts from signals (see `--help` for usage)
 - **fdb-data-analyzer** — Summarize latest FDB data from cached CSV files
   - See [docs/FDBDataAnalyzer_CLI_and_Tests.md](docs/FDBDataAnalyzer_CLI_and_Tests.md) for usage and tests
+  - Additional orchestrator coverage documented in [docs/Agentic_Orchestrator_and_Tests.md](docs/Agentic_Orchestrator_and_Tests.md)
 
 > All other scripts are either not yet implemented as CLI or are internal modules. Only mapped, real CLI entrypoints are exposed.
 
