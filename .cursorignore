@@ -1,2 +1,14 @@
 weekly_report.txt
 src/agentictraderintenttojgtmlspec1pto250604c
+archived
+cache
+.github
+_samples
+data
+dist
+*egg-info
+__pycache__
+LoreWeave
+logs
+rjgt
+
