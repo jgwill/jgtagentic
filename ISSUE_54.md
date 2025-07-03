@@ -30,3 +30,6 @@ This issue tracks the *jgtagentic* side of the ML-powered trading enhancement dr
 
 ---
 Sync regularly with [Issue 62](../jgtml/ISSUE_62.md) for upstream progress.
+
+
+
