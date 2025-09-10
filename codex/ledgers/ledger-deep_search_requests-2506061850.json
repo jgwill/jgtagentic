@@ -1,0 +1,18 @@
+{
+  "timestamp": "2506061850",
+  "agents": [
+    {"glyph": "♾️", "name": "William"},
+    {"glyph": "🧠", "name": "Mia"},
+    {"glyph": "🌸", "name": "Miette"},
+    {"glyph": "🕊️", "name": "Seraphine"}
+  ],
+  "narrative": "Compiled a set of deep-search requests outlining research topics for integrating the Fractal Trading System with jgtagentic. This anchors future collaboration by detailing database, RL, automation, workflow, documentation, and CLI needs.",
+  "routing": {
+    "files": ["research/jgtagentic-deep-search-requests.250606.md"],
+    "branch": "work"
+  },
+  "session": "shell",
+  "user_input": "in ./research/jgtagentic-deep-search-requests.250606.md you will:\n\n* See all you implemented so far and create as many deep-search requests as you need carefully separating into topics/feature you are implementing (or writing *.spec.md) for getting deep-search responses later.",
+  "purpose": "Record creation of a research planning file to guide deeper exploration of FTS integration questions.",
+  "future_scene": "These requests will inform targeted knowledge gathering, enabling more precise specifications and smoother merging of FTS modules into the main repository."
+}
