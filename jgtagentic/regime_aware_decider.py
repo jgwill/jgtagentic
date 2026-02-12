@@ -8,17 +8,12 @@ Lattice Position: The evolved oracle—seeing both signals AND market context.
 """
 
 import logging
-import sys
-from pathlib import Path
 from typing import Dict, Optional, Any
 
-# Import regime detector
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'SANDBOX' / 'saraia-2508'))
-try:
-    from regime_detector import RegimeDetector, calculate_adx
-    REGIME_AVAILABLE = True
-except ImportError:
-    REGIME_AVAILABLE = False
+from .regime import RegimeDetector, MarketRegime, TrendDirection, RegimeResult
+from .scoring import SignalScorer, ScoredSignal
+
+REGIME_AVAILABLE = True
 
 class RegimeAwareDecider:
     """
@@ -37,15 +32,12 @@ class RegimeAwareDecider:
         self.adx_threshold = adx_threshold
         self.trend_ma_period = trend_ma_period
         
-        if REGIME_AVAILABLE:
-            self.regime_detector = RegimeDetector(
-                adx_threshold=adx_threshold,
-                trend_ma_period=trend_ma_period
-            )
-            self.logger.info(f"[RegimeAwareDecider] Initialized with ADX threshold: {adx_threshold}")
-        else:
-            self.regime_detector = None
-            self.logger.warning("[RegimeAwareDecider] Regime detector not available - running without filter")
+        self.regime_detector = RegimeDetector(
+            adx_threshold=adx_threshold,
+            trend_ma_period=trend_ma_period
+        )
+        self.scorer = SignalScorer()
+        self.logger.info(f"[RegimeAwareDecider] Initialized with ADX threshold: {adx_threshold}")
     
     def decide(self, signal: Dict, df=None) -> Dict:
         """
@@ -68,28 +60,28 @@ class RegimeAwareDecider:
         timeframe = signal.get('timeframe', 'UNKNOWN')
         direction = signal.get('direction', 'UNKNOWN')
         
-        # Default regime if no detector or data
-        regime = {
-            'regime': 'UNKNOWN',
-            'adx': 0,
-            'trend_direction': 'UNKNOWN',
-            'trend_strength': 0,
-            'tradeable': False
-        }
-        
         # Detect regime if data available
-        if self.regime_detector and df is not None:
+        if df is not None:
             try:
-                import pandas as pd
-                # Ensure data is prepared
-                if 'adx' not in df.columns:
-                    df['adx'] = calculate_adx(df)
-                if 'ema_50' not in df.columns:
-                    df['ema_50'] = df['Close'].ewm(span=50, adjust=False).mean()
-                
-                regime = self.regime_detector.detect_regime(df)
+                regime_result = self.regime_detector.detect(df)
+                regime = regime_result.to_dict()
             except Exception as e:
                 self.logger.warning(f"[RegimeAwareDecider] Regime detection error: {e}")
+                regime = RegimeResult(
+                    regime=MarketRegime.UNKNOWN,
+                    adx=0,
+                    trend_direction=TrendDirection.UNKNOWN,
+                    trend_strength=0,
+                    tradeable=False
+                ).to_dict()
+        else:
+            regime = RegimeResult(
+                regime=MarketRegime.UNKNOWN,
+                adx=0,
+                trend_direction=TrendDirection.UNKNOWN,
+                trend_strength=0,
+                tradeable=False
+            ).to_dict()
         
         # Decision logic
         decision = self._make_decision(signal, regime)
@@ -173,7 +165,13 @@ class RegimeAwareDecider:
         }
     
     def _assess_signal_quality(self, signal: Dict) -> Dict:
-        """Assess overall signal quality."""
+        """
+        Assess overall signal quality.
+        
+        Returns normalized score 0-1 for compatibility with existing code.
+        Internally uses SignalScorer for detailed analysis.
+        """
+        # Legacy simple scoring for backward compatibility
         score = 0.0
         factors = []
         
