@@ -10,34 +10,30 @@ Lattice Position: The evolved oracle—seeing both signals AND market context.
 import logging
 from typing import Dict, Optional, Any
 
-from .regime import RegimeDetector, MarketRegime, TrendDirection, RegimeResult
+from .alligator_regime import AlligatorDetector, AlligatorState, TrendDirection, AlligatorResult
 from .scoring import SignalScorer, ScoredSignal
 
 REGIME_AVAILABLE = True
 
 class RegimeAwareDecider:
     """
-    Enhanced decider with regime detection.
-    
-    Key improvements:
-    - Only approves trades in TRENDING markets (ADX > 25)
-    - Ensures signal direction aligns with trend direction
+    Enhanced decider with Williams Alligator regime detection.
+
+    Key behavior:
+    - Only approves trades when the Alligator is EATING (trending)
+    - Ensures signal direction aligns with the Alligator direction
     - Provides regime context in decision output
     """
-    
-    def __init__(self, logger=None, adx_threshold=25, trend_ma_period=50):
+
+    def __init__(self, logger=None, sleep_threshold=0.0015):
         self.logger = logger or logging.getLogger("RegimeAwareDecider")
         self.logger.setLevel(logging.INFO)
-        
-        self.adx_threshold = adx_threshold
-        self.trend_ma_period = trend_ma_period
-        
-        self.regime_detector = RegimeDetector(
-            adx_threshold=adx_threshold,
-            trend_ma_period=trend_ma_period
-        )
+
+        self.sleep_threshold = sleep_threshold
+
+        self.regime_detector = AlligatorDetector(sleep_threshold=sleep_threshold)
         self.scorer = SignalScorer()
-        self.logger.info(f"[RegimeAwareDecider] Initialized with ADX threshold: {adx_threshold}")
+        self.logger.info("[RegimeAwareDecider] Initialized with Williams Alligator regime filter")
     
     def decide(self, signal: Dict, df=None) -> Dict:
         """
@@ -67,45 +63,44 @@ class RegimeAwareDecider:
                 regime = regime_result.to_dict()
             except Exception as e:
                 self.logger.warning(f"[RegimeAwareDecider] Regime detection error: {e}")
-                regime = RegimeResult(
-                    regime=MarketRegime.UNKNOWN,
-                    adx=0,
-                    trend_direction=TrendDirection.UNKNOWN,
-                    trend_strength=0,
-                    tradeable=False
-                ).to_dict()
+                regime = self._unknown_regime()
         else:
-            regime = RegimeResult(
-                regime=MarketRegime.UNKNOWN,
-                adx=0,
-                trend_direction=TrendDirection.UNKNOWN,
-                trend_strength=0,
-                tradeable=False
-            ).to_dict()
+            regime = self._unknown_regime()
         
         # Decision logic
         decision = self._make_decision(signal, regime)
-        
+
         self.logger.info(f"[RegimeAwareDecider] Decision: {decision['action']} - {decision['reason']}")
-        
+
         return decision
+
+    def _unknown_regime(self) -> Dict:
+        """Regime context when data is unavailable or detection failed."""
+        return AlligatorResult(
+            state=AlligatorState.UNKNOWN,
+            direction=TrendDirection.UNKNOWN,
+            jaw=0, teeth=0, lips=0, spread=0,
+            tradeable=False,
+        ).to_dict()
     
     def _make_decision(self, signal: Dict, regime: Dict) -> Dict:
         """Core decision logic with regime awareness."""
         
         direction = signal.get('direction', 'UNKNOWN').upper()
-        trend = regime.get('trend_direction', 'UNKNOWN').upper()
-        
-        # Check 1: Is market tradeable (trending)?
+        trend = regime.get('direction', 'UNKNOWN').upper()
+        state = regime.get('state', 'UNKNOWN')
+        spread_pct = regime.get('spread', 0) * 100
+
+        # Check 1: Is the Alligator eating (trending)?
         if not regime.get('tradeable', False):
             return {
                 'action': 'SKIP',
-                'reason': f"Market is RANGING (ADX: {regime.get('adx', 0):.1f} < {self.adx_threshold})",
+                'reason': f"Alligator {state} — not eating (spread {spread_pct:.2f}%). Keep your powder dry.",
                 'regime': regime,
                 'signal': signal,
                 'next_steps': [
-                    "⏳ Wait for trend to develop",
-                    f"📊 Monitor ADX - needs to rise above {self.adx_threshold}",
+                    "⏳ Wait for the Alligator to wake and eat",
+                    "📊 Watch for lines to fan out (mouth opening) with proper ordering",
                     "🔄 Check again in next timeframe bar"
                 ]
             }
@@ -150,7 +145,7 @@ class RegimeAwareDecider:
         # All checks passed - TRADE!
         return {
             'action': 'TRADE',
-            'reason': f"TRENDING market ({regime['regime']}) with aligned {direction} signal",
+            'reason': f"EATING market ({regime.get('state')}) with aligned {direction} signal",
             'regime': regime,
             'signal': signal,
             'quality': signal_quality,
@@ -158,8 +153,8 @@ class RegimeAwareDecider:
             'next_steps': [
                 f"✅ EXECUTE {direction} on {signal.get('instrument')} {signal.get('timeframe')}",
                 f"📍 Entry: {signal.get('entry_price', 'Market')}",
-                f"⚡ ADX: {regime.get('adx', 0):.1f} | Trend strength: {regime.get('trend_strength', 0):.2f}%",
-                "🛡️ Set stop loss at swing low/high",
+                f"⚡ Alligator {regime.get('state')} {regime.get('direction')} | feed spread: {spread_pct:.2f}%",
+                "🛡️ Set stop loss at swing low/high (teeth / lips)",
                 "🎯 Target: 1.5-2x risk-reward ratio"
             ]
         }
@@ -233,8 +228,8 @@ class RegimeAwareDecider:
             if decision['action'] == 'TRADE':
                 decisions.append(decision)
         
-        # Sort by regime ADX (strongest trends first)
-        decisions.sort(key=lambda d: d.get('regime', {}).get('adx', 0), reverse=True)
+        # Sort by Alligator feed spread (strongest trends first)
+        decisions.sort(key=lambda d: d.get('regime', {}).get('spread', 0), reverse=True)
         
         return decisions
 
@@ -259,7 +254,7 @@ if __name__ == '__main__':
         'entry_price': 1.0850
     }
     
-    decider = RegimeAwareDecider(adx_threshold=25)
+    decider = RegimeAwareDecider()
     decision = decider.decide(test_signal)
     
     print(json.dumps(decision, indent=2, default=str))

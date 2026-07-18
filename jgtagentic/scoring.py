@@ -19,7 +19,7 @@ class ScoreBreakdown:
     mfi_score: int = 0        # 0-50
     zone_score: int = 0       # 0-15
     alligator_score: int = 0  # 0-10
-    adx_bonus: int = 0        # 0-15
+    spread_bonus: int = 0     # 0-15  (Alligator feed strength)
     htf_bonus: int = 0        # 0-10
     total: int = 0            # 0-100
     factors: List[str] = field(default_factory=list)
@@ -42,7 +42,7 @@ class ScoredSignal:
     
     # Regime info
     regime: str = ""
-    adx: float = 0
+    spread: float = 0     # Alligator feed spread (replaces ADX)
     zone: str = ""
     
     # Active signals detail
@@ -59,7 +59,7 @@ class ScoredSignal:
                 "mfi_score": self.breakdown.mfi_score,
                 "zone_score": self.breakdown.zone_score,
                 "alligator_score": self.breakdown.alligator_score,
-                "adx_bonus": self.breakdown.adx_bonus,
+                "spread_bonus": self.breakdown.spread_bonus,
                 "htf_bonus": self.breakdown.htf_bonus,
                 "total": self.breakdown.total,
                 "factors": self.breakdown.factors,
@@ -69,7 +69,7 @@ class ScoredSignal:
             "target_price": self.target_price,
             "risk_reward": self.risk_reward,
             "regime": self.regime,
-            "adx": self.adx,
+            "spread": self.spread,
             "zone": self.zone,
             "active_signals": self.active_signals,
         }
@@ -83,37 +83,40 @@ class SignalScorer:
     - MFI signals (max 50 points)
     - Zone alignment (max 15 points)
     - Alligator alignment (max 10 points)
-    - ADX strength bonus (max 15 points)
+    - Alligator feed-strength bonus (max 15 points)
     - HTF confirmation (max 10 points)
-    
+
     Total: 0-100 points
     """
-    
+
     def __init__(
         self,
         mfi_weight: int = 10,
         zone_weight: int = 15,
         alligator_weight: int = 10,
-        adx_strong_threshold: float = 40,
-        adx_bonus: int = 15,
+        spread_strong_threshold: float = 0.005,
+        spread_good_threshold: float = 0.003,
+        spread_bonus: int = 15,
         htf_bonus: int = 10,
     ):
         """
         Initialize scorer with weights.
-        
+
         Args:
             mfi_weight: Points per MFI signal (max 5 signals)
             zone_weight: Points for zone alignment
             alligator_weight: Points for Alligator alignment
-            adx_strong_threshold: ADX above this gets bonus
-            adx_bonus: Bonus points for strong ADX
+            spread_strong_threshold: Alligator feed spread above this gets full bonus
+            spread_good_threshold: Alligator feed spread above this gets partial bonus
+            spread_bonus: Bonus points for a strong (well-fanned) Alligator feed
             htf_bonus: Bonus for HTF confirmation
         """
         self.mfi_weight = mfi_weight
         self.zone_weight = zone_weight
         self.alligator_weight = alligator_weight
-        self.adx_strong_threshold = adx_strong_threshold
-        self.adx_bonus = adx_bonus
+        self.spread_strong_threshold = spread_strong_threshold
+        self.spread_good_threshold = spread_good_threshold
+        self.spread_bonus = spread_bonus
         self.htf_bonus = htf_bonus
     
     def score(
@@ -164,8 +167,8 @@ class SignalScorer:
             stop_price=trade_params.get("stop", 0),
             target_price=trade_params.get("target", 0),
             risk_reward=trade_params.get("risk_reward", 0),
-            regime=regime.regime.value,
-            adx=regime.adx,
+            regime=regime.state.value,
+            spread=regime.spread,
             zone=signals.get("zcol", ""),
             active_signals=signals,
         )
@@ -246,9 +249,9 @@ class SignalScorer:
             return "SHORT"
         
         # Fall back to regime direction
-        if regime.trend_direction == TrendDirection.UP:
+        if regime.direction == TrendDirection.UP:
             return "LONG"
-        if regime.trend_direction == TrendDirection.DOWN:
+        if regime.direction == TrendDirection.DOWN:
             return "SHORT"
         
         return "LONG"  # Default
@@ -291,15 +294,15 @@ class SignalScorer:
             alligator_score = self.alligator_weight
             factors.append("Alligator: BEARISH aligned")
         
-        # 4. ADX Strength Bonus (15 points)
-        adx_bonus = 0
-        if regime.adx >= self.adx_strong_threshold:
-            adx_bonus = self.adx_bonus
-            factors.append(f"Strong ADX: {regime.adx:.1f}")
-        elif regime.adx >= 30:
-            adx_bonus = 8
-            factors.append(f"Good ADX: {regime.adx:.1f}")
-        
+        # 4. Alligator Feed-Strength Bonus (15 points) — how well the mouth is fanned
+        spread_bonus = 0
+        if regime.spread >= self.spread_strong_threshold:
+            spread_bonus = self.spread_bonus
+            factors.append(f"Strong feed: spread {regime.spread * 100:.2f}%")
+        elif regime.spread >= self.spread_good_threshold:
+            spread_bonus = 8
+            factors.append(f"Good feed: spread {regime.spread * 100:.2f}%")
+
         # 5. HTF Confirmation (10 points)
         htf_bonus = 0
         if ttf_data is not None and not ttf_data.empty:
@@ -308,14 +311,14 @@ class SignalScorer:
                 factors.append(f"HTF: confirmed (+{htf_bonus})")
             else:
                 factors.append("HTF: no alignment")
-        
-        total = mfi_score + zone_score + alligator_score + adx_bonus + htf_bonus
-        
+
+        total = mfi_score + zone_score + alligator_score + spread_bonus + htf_bonus
+
         return ScoreBreakdown(
             mfi_score=mfi_score,
             zone_score=zone_score,
             alligator_score=alligator_score,
-            adx_bonus=adx_bonus,
+            spread_bonus=spread_bonus,
             htf_bonus=htf_bonus,
             total=total,
             factors=factors,
